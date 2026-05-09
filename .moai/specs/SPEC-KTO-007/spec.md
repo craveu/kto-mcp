@@ -1,7 +1,7 @@
 ---
 id: SPEC-KTO-007
-version: 0.1.0
-status: draft
+version: 1.0.0
+status: completed
 created: 2026-05-09
 updated: 2026-05-09
 author: Seonho Kim
@@ -15,7 +15,8 @@ issue_number: 0
 
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
-| 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. 한국관광공사 반려동물 동반여행 정보 API (`KorPetTourService2`, data.go.kr ID 15135102) 13 오퍼레이션 중 **4 를 MCP 도구로 매핑** 하는 7차 이터레이션 정의 (List 3 + Sync 1). SPEC-KTO-001 ~ SPEC-KTO-006 의 공용 인프라 (`KtoHttpClient`·`response-normalizer`·`tool-registry`·transport 3종·에러 모델·재시도 정책·`BASE_URL_MAP`) 100% 재사용. 사전 검증 완료 — `[ASSUMED]` 마커 0건. 신규 typed item `KorPetTourItem` (20 필드 + 인덱스 시그니처) 1 entity 도입. SPEC-KTO-002 가 도입한 **R1 중복 회피 정책** 을 detail 5종까지 확장 적용 — 13 오퍼레이션 중 9 (Code 4 + Detail 5) 미노출. SPEC-KTO-001 R7 위험 (`detailPetTour2` 의 KorService2 포함 여부) **본 SPEC 시점에 명시적으로 해소** — 양 서비스 모두 보유 + 동일 응답 검증 완료, `kto_korean_detailPetTour2` 단일 도구로 충분. 신규 V2 sibling pattern 인 `KorPetTourService2` BASE_URL_MAP 키 1줄 추가. 도구 카운트 44 → 48. |
+| 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료, 실 키 스모크 검증 통과, main 머지 완료 |
+| 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. 한국관광공사 반려동물 동반여행 정보 API (`KorPetTourService2`, data.go.kr ID 15135102) 13 오퍼레이션 중 4를 MCP 도구로 매핑하는 7차 이터레이션 정의. |
 
 ---
 

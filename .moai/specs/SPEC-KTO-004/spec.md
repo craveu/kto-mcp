@@ -1,7 +1,7 @@
 ---
 id: SPEC-KTO-004
-version: 0.1.0
-status: draft
+version: 1.0.0
+status: completed
 created: 2026-05-09
 updated: 2026-05-09
 author: Seonho Kim
@@ -15,7 +15,8 @@ issue_number: 0
 
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
-| 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. 한국관광공사 고캠핑 정보조회 API(`GoCamping`, data.go.kr ID 15101933) 5 오퍼레이션을 MCP 도구로 매핑하는 4차 이터레이션 정의. SPEC-KTO-001 (KorService2) / SPEC-KTO-002 (KorWithService2) / SPEC-KTO-003 (PhotoGalleryService1) 의 공용 인프라(`KtoHttpClient`·`response-normalizer`·`tool-registry`·transport 3종·에러 모델·재시도 정책·`BASE_URL_MAP`) 100% 재사용. Swagger 2.0 스펙 직접 파싱 + 사용자 실 호출 응답으로 [ASSUMED] 마커 0건. 신규 typed item `GoCampingItem` (50+ 필드, 인덱스 시그니처 활용) + `GoCampingImageItem` (5 필드) 도입. |
+| 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료, 실 키 스모크 검증 통과, main 머지 완료 |
+| 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. 한국관광공사 고캠핑 정보조회 API(`GoCamping`, data.go.kr ID 15101933) 5 오퍼레이션을 MCP 도구로 매핑하는 4차 이터레이션 정의. |
 
 ---
 

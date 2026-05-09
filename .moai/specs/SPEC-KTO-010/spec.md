@@ -1,7 +1,7 @@
 ---
 id: SPEC-KTO-010
-version: 0.1.0
-status: draft
+version: 1.0.0
+status: completed
 created: 2026-05-09
 updated: 2026-05-09
 author: Seonho Kim
@@ -13,7 +13,10 @@ issue_number: 0
 
 ## HISTORY
 
-- 2026-05-09: 초기 draft 작성. **KTO 통합 시리즈 10/10 완성 마일스톤 SPEC**으로, SPEC-KTO-001~009의 누적 63개 MCP 도구에 PhokoAwrdService 2개 도구를 추가하여 총 65개 도구로 KTO B551011 게이트웨이 산하 전 서비스 통합을 마감한다. 본 SPEC을 통해 KTO 다국어 처리 7가지 패턴 분류 체계가 완성된다 (패턴 7 = 응답 필드 prefix `ko*` / `en*`). `ldongCode` operation은 KorService2/`ldongCode2`와 중복이므로 노출하지 않는다.
+| Version | Date | Author | Change |
+|---------|------|--------|--------|
+| 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료, 실 키 스모크 검증 통과, main 머지 완료. 10/10 마일스톤 달성 — 65개 도구, 7가지 패턴 완벽 흡수 |
+| 0.1.0 | 2026-05-09 | Seonho Kim | 초기 draft 작성. KTO 통합 시리즈 10/10 완성 마일스톤. SPEC-KTO-001~009의 누적 63개 MCP 도구에 PhokoAwrdService 2개 도구 추가하여 총 65개 도구로 마감. |
 
 ## 1. 배경 및 동기
 

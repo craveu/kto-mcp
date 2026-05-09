@@ -2,7 +2,7 @@
 
 ## 현재 상태
 
-NestJS 11 신규 스캐폴드 상태. `src/app.controller`, `app.service`, `app.module`, `main.ts`만 존재.
+NestJS 11 + TypeScript 5 기반 MCP 서버 10/10 완성. 65개 MCP 도구 노출, 10개 KTO API 모듈 통합 완료.
 
 ---
 
@@ -29,52 +29,64 @@ kto-mcp/
 │   │   └── types/                        # MCP 타입 정의 (재정의/확장)
 │   │       └── mcp.types.ts              # MCPTool, MCPResource 등
 │   │
-│   ├── kto/                              # KTO API 통합 계층
-│   │   ├── kto.module.ts                 # KTO 모듈 정의
-│   │   ├── kto-http.client.ts            # 공용 KTO HTTP 클라이언트
-│   │   │                                 # - 서비스 키 관리, baseURL 파라미터화
-│   │   │                                 # - language 파라미터 주입 가능, XML/JSON 응답 파싱
-│   │   │                                 # - 지수 백오프 재시도 (3회, base 500ms)
-│   │   ├── kto-http.client.spec.ts       # HTTP 클라이언트 단위 테스트
-│   │   │
-│   │   │
-│   │   ├── common/                       # 다국어 확장 시 공유될 요소
-│   │   │   ├── dto/                      # Data Transfer Objects
-│   │   │   │   ├── tour-info.dto.ts      # 관광정보 응답 DTO (언어 무관)
-│   │   │   │   ├── accommodation.dto.ts  # 숙박 DTO
-│   │   │   │   ├── festival.dto.ts       # 축제 DTO
-│   │   │   │   └── common.dto.ts         # 공용 필드/타입
-│   │   │   ├── constants/                # 상수
-│   │   │   │   ├── api-endpoints.ts      # API 엔드포인트 매핑
-│   │   │   │   ├── error-codes.ts        # KTO API 에러 코드
-│   │   │   │   └── language.constants.ts # 언어 코드 (국, 영, 일, 중 등)
-│   │   │   ├── interfaces/
-│   │   │   │   ├── kto-client.interface.ts  # KTOClient 인터페이스
-│   │   │   │   └── kto-service.interface.ts # KTOService 인터페이스
-│   │   │   ├── errors/
-│   │   │   │   ├── kto.error.ts          # KTO API 예외 클래스
-│   │   │   │   └── validation.error.ts
-│   │   │   └── utils/
-│   │   │       ├── xml-parser.util.ts    # XML 응답 파싱 유틸
-│   │   │       └── response-mapper.util.ts # API 응답 → DTO 매핑
-│   │   │
-│   │   └── korean-tour-info/             # 1차 구현 대상 (API ID: 15101578)
-│   │       ├── korean-tour-info.module.ts
-│   │       ├── korean-tour-info.service.ts  # 비즈니스 로직
-│   │       │                             # - 관광지, 숙박, 음식점, 축제 조회
-│   │       │                             # - 상세 정보 조회
-│   │       │                             # - 검색/필터링
-│   │       ├── korean-tour-info.service.spec.ts
-│   │       ├── korean-tour-info.tools.ts # MCP 도구 정의
-│   │       │                             # - searchTouristAttractions()
-│   │       │                             # - getAccommodations()
-│   │       │                             # - searchRestaurants()
-│   │       │                             # - searchFestivals()
-│   │       │                             # - getDetailedInfo()
-│   │       │                             # (Swagger 기준 모든 오퍼레이션)
-│   │       ├── dto/
-│   │       │   └── korean-tour-info.dto.ts # API 응답 타입 (한국어 필드명 포함)
-│   │       └── korean-tour-info.controller.ts # (선택) 개발/테스트 REST 엔드포인트
+│   ├── kto/                              # KTO API 통합 계층 (10개 모듈)
+│   │   ├── kto.module.ts                 # KTO 루트 모듈
+│   │   ├── common/                       # 공용 인프라 (전체 모듈 공유)
+│   │   │   ├── dto/                      # 공용 Data Transfer Objects
+│   │   │   ├── constants/                # BASE_URL_MAP, 에러 코드
+│   │   │   ├── interfaces/               # KTOClient, KTOService 인터페이스
+│   │   │   ├── errors/                   # KTO API 예외 클래스
+│   │   │   └── utils/                    # XML 파싱, 응답 정규화, 재시도 정책
+│   │   ├── korean-tour-info/             # KTO-001: 국문 관광정보 (15 도구)
+│   │   │   ├── korean-tour-info.module.ts
+│   │   │   ├── korean-tour-info.service.ts
+│   │   │   ├── korean-tour-info.tools.ts
+│   │   │   └── dto/
+│   │   ├── barrier-free-tour-info/       # KTO-002: 무장애 여행정보 (10 도구)
+│   │   │   ├── barrier-free-tour-info.module.ts
+│   │   │   ├── barrier-free-tour-info.service.ts
+│   │   │   ├── barrier-free-tour-info.tools.ts
+│   │   │   └── dto/
+│   │   ├── photo-gallery/                # KTO-003: 관광사진 (4 도구)
+│   │   │   ├── photo-gallery.module.ts
+│   │   │   ├── photo-gallery.service.ts
+│   │   │   ├── photo-gallery.tools.ts
+│   │   │   └── dto/
+│   │   ├── go-camping/                   # KTO-004: 고캠핑 (5 도구)
+│   │   │   ├── go-camping.module.ts
+│   │   │   ├── go-camping.service.ts
+│   │   │   ├── go-camping.tools.ts
+│   │   │   └── dto/
+│   │   ├── audio-guide/                  # KTO-005: 오디오 가이드 Odii (8 도구)
+│   │   │   ├── audio-guide.module.ts
+│   │   │   ├── audio-guide.service.ts
+│   │   │   ├── audio-guide.tools.ts
+│   │   │   └── dto/
+│   │   ├── durunubi/                     # KTO-006: 두루누비 (2 도구)
+│   │   │   ├── durunubi.module.ts
+│   │   │   ├── durunubi.service.ts
+│   │   │   ├── durunubi.tools.ts
+│   │   │   └── dto/
+│   │   ├── pet-tour/                     # KTO-007: 반려동물 동반 (4 도구)
+│   │   │   ├── pet-tour.module.ts
+│   │   │   ├── pet-tour.service.ts
+│   │   │   ├── pet-tour.tools.ts
+│   │   │   └── dto/
+│   │   ├── medical-tourism/              # KTO-008: 의료관광 (7 도구)
+│   │   │   ├── medical-tourism.module.ts
+│   │   │   ├── medical-tourism.service.ts
+│   │   │   ├── medical-tourism.tools.ts
+│   │   │   └── dto/
+│   │   ├── wellness-tourism/             # KTO-009: 웰니스관광 (8 도구)
+│   │   │   ├── wellness-tourism.module.ts
+│   │   │   ├── wellness-tourism.service.ts
+│   │   │   ├── wellness-tourism.tools.ts
+│   │   │   └── dto/
+│   │   └── photo-award/                  # KTO-010: 관광공모전 (2 도구)
+│   │       ├── photo-award.module.ts
+│   │       ├── photo-award.service.ts
+│   │       ├── photo-award.tools.ts
+│   │       └── dto/
 │   │
 │   ├── app.controller.ts                 # (기존) 헬스체크 엔드포인트만 유지
 │   ├── app.service.ts                    # (기존, 최소화)
@@ -127,40 +139,26 @@ kto-mcp/
 
 ---
 
-## 다국어 확장 설계
+## 다국어 패턴 정리
 
-### 이 이터레이션 (국문만) — 실제 구현
+### 7가지 KTO 다국어 처리 패턴 (완벽 흡수)
 
-**참고**: SPEC-KTO-001 plan.md §10 에 따라 `kto-http.client.ts` 는 `src/kto/clients/` 서브디렉토리가 아닌 `src/kto/` 플랫 레벨에 배치되었습니다.
+| # | 패턴 명칭 | 예시 | 모듈 | 설명 |
+|---|---------|------|------|------|
+| 1 | V2 별도 path 다국어 변체 | KorService2/EngService2/JpnService2 등 | KTO-001 | 서비스명 + 국가코드 suffix + V2 |
+| 2 | V2 sibling 단독 | KorWithService2, KorPetTourService2 | KTO-002, 007 | V2 version이지만 다국어 변체 없음 |
+| 3 | V1 단독 | PhotoGalleryService1 | KTO-003 | V1 version, 다국어 변체 미보유 |
+| 4 | suffix 없음 평면형 | GoCamping, Durunubi | KTO-004, 006 | 버전/언어 suffix 모두 없음 |
+| 5 | langCode 파라미터 | Odii (ko/en만 권장) | KTO-005 | 단일 path + langCode 파라미터 |
+| 6 | langDivCd 파라미터 + lang fluid | MdclTursmService, WellnessTursmService | KTO-008, 009 | 단일 path + langDivCd + 응답 유연 |
+| 7 | 응답 필드 prefix (ko*/en*) | PhokoAwrdService | KTO-010 | 한/영 필드를 동시 응답 |
 
-```
-kto/
-├── kto-http.client.ts        # language 파라미터 미리 준비
-├── common/                   # 모든 언어에서 공유
-├── korean-tour-info/         # 국문 API (15101578)
-```
-
-### 2차+ 이터레이션 (다국어 추가)
-각 언어별 모듈이 동일 구조로 추가되며, 기존 `common`과 `clients` 재사용:
-
-```
-kto/
-├── common/
-├── clients/kto-http.client.ts      # language = "English" 파라미터
-├── korean-tour-info/                # API 15101578 (국문)
-├── english-tour-info/               # API 15101578-ENG (영문)
-├── japanese-tour-info/              # API 15101578-JPN (일문)
-├── chinese-simplified-tour-info/    # API 15101578-CHS (중문 간체)
-├── chinese-traditional-tour-info/   # API 15101578-CHT (중문 번체)
-├── german-tour-info/                # API 15101578-GER (독일문)
-├── french-tour-info/                # API 15101578-FRE (프랑스문)
-├── spanish-tour-info/               # API 15101578-SPA (스페인문)
-└── russian-tour-info/               # API 15101578-RUS (러시아문)
-```
-
-**확장 시 변경량**:
-- 새 언어 모듈: 200~300줄 (service + tools 정의)
-- 기존 코드 변경: 최소화 (클라이언트 language 파라미터만 주입)
+### 아키텍처 재사용성
+- **공용 KtoHttpClient**: 모든 10개 모듈이 단일 인스턴스 재사용
+- **BASE_URL_MAP**: 10개 API를 키-밸류로 중앙 집중 관리
+- **response-normalizer**: 모든 응답을 일관된 JSON 포맷으로 정규화
+- **tool-registry**: 65개 도구를 동적 등록/해제
+- **transport 계층**: stdio/http-streamable/http-json 3종 공통 사용
 
 ---
 
@@ -240,6 +238,7 @@ import { mapApiResponseToDto } from '../common/utils/response-mapper.util';
 
 ---
 
-Version: 1.0.0  
+Version: 2.0.0  
 Last Updated: 2026-05-09  
 Owner: seonho@wantedlab.com
+Status: 10/10 완성, 65개 도구 노출, 7가지 패턴 흡수

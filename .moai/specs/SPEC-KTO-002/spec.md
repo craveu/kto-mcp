@@ -1,7 +1,7 @@
 ---
 id: SPEC-KTO-002
-version: 0.1.0
-status: draft
+version: 1.0.0
+status: completed
 created: 2026-05-09
 updated: 2026-05-09
 author: Seonho Kim
@@ -15,6 +15,7 @@ issue_number: 0
 
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
+| 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료, 실 키 스모크 검증 통과, main 머지 완료 |
 | 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. KorWithService2 무장애 여행 정보 API(data.go.kr ID 15101897) 를 MCP 도구로 매핑하는 2차 이터레이션 정의. SPEC-KTO-001 의 KtoHttpClient·response-normalizer·tool-registry·transport 인프라 100% 재사용. |
 
 ---

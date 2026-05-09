@@ -1,7 +1,7 @@
 ---
 id: SPEC-KTO-008
-version: 0.1.0
-status: draft
+version: 1.0.0
+status: completed
 created: 2026-05-09
 updated: 2026-05-09
 author: Seonho Kim
@@ -15,7 +15,8 @@ issue_number: 0
 
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
-| 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. 한국관광공사 의료관광 정보 API (`MdclTursmService`, data.go.kr ID 15143913) 8 오퍼레이션 중 **7 을 MCP 도구로 매핑** 하는 8차 이터레이션 정의 (List 3 + Sync 1 + Detail 3). SPEC-KTO-001 ~ SPEC-KTO-007 의 공용 인프라 (`KtoHttpClient`·`response-normalizer`·`tool-registry`·transport 3종·에러 모델·재시도 정책·`BASE_URL_MAP`) 100% 재사용. 사전 검증 완료 — `[ASSUMED]` 마커 0건. 신규 typed item `MdclTursmItem` (17 필드 + sync 2 필드 + 인덱스 시그니처) 1 entity 도입 — KorService2 family 와 명명 도메인 분리 (camelCase `contentId`/`mapX`/`mapY`/`regDt`/`mdfcnDt` vs lowercase `contentid`/`mapx`/`mapy`/`createdtime`/`modifiedtime`). 신규 service path 패턴 — KTO API 의 **6번째 패턴** (`langDivCd` 파라미터 + lang fluid, Odii 의 langCode 패턴과 third-letter difference) 흡수. **신규 required parameter `langDivCd`** — 모든 7 노출 도구에서 KTO 게이트웨이 강제, KTO 가 임의 값 수용 (any string tolerated, server-normalized ENG 응답). `ldongCode` 1 미노출 (R1 정책 적용 — KorService2 의 `kto_korean_ldongCode2` 와 동일 응답 추정). 신규 V suffix-less pattern + NO suffix 오퍼레이션 (GoCamping/Durunubi 와 유사 service path, 그러나 `langDivCd` 추가) BASE_URL_MAP 키 1줄 추가. 도구 카운트 48 → 55. |
+| 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료, 실 키 스모크 검증 통과, main 머지 완료 |
+| 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. 한국관광공사 의료관광 정보 API (`MdclTursmService`, data.go.kr ID 15143913) 8 오퍼레이션 중 7을 MCP 도구로 매핑하는 8차 이터레이션 정의. |
 
 ---
 

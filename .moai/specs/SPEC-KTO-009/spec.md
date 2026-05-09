@@ -1,7 +1,7 @@
 ---
 id: SPEC-KTO-009
-version: 0.1.0
-status: draft
+version: 1.0.0
+status: completed
 created: 2026-05-09
 updated: 2026-05-09
 author: Seonho Kim
@@ -13,7 +13,10 @@ issue_number: 0
 
 ## HISTORY
 
-- 2026-05-09 (v0.1.0, draft): 최초 SPEC 작성. SPEC-KTO-001~008 머지 완료된 main 브랜치 (fa0a4d0, 55 tools) 위에 KTO 6번째 패턴 (langDivCd) 의 두 번째 적용 사례로서 웰니스관광 정보 API 통합. 9 operation 중 8개 노출 (ldongCode 는 KorService2 ldongCode2 와 시맨틱 동일 → R1 dedup). 새 도구 prefix `kto_wellness_*`. 도구 카운트 55 → 63. 의료관광(SPEC-KTO-008) MdclTursmItem 과 도메인 분리 원칙 적용 — WellnessTursmItem 별도 정의.
+| Version | Date | Author | Change |
+|---------|------|--------|--------|
+| 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료, 실 키 스모크 검증 통과, main 머지 완료 |
+| 0.1.0 | 2026-05-09 | Seonho Kim | 최초 SPEC 작성. SPEC-KTO-001~008 머지 완료된 main 브랜치 위에 KTO 6번째 패턴 (langDivCd) 의 두 번째 적용 사례로서 웰니스관광 정보 API 통합. 9 operation 중 8개 노출. |
 
 ## 1. 목적
 

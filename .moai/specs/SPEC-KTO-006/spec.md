@@ -1,7 +1,7 @@
 ---
 id: SPEC-KTO-006
-version: 0.1.0
-status: draft
+version: 1.0.0
+status: completed
 created: 2026-05-09
 updated: 2026-05-09
 author: Seonho Kim
@@ -15,7 +15,8 @@ issue_number: 0
 
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
-| 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. 한국관광공사 두루누비 정보 API(`Durunubi`, data.go.kr ID 15101974) 2 오퍼레이션을 MCP 도구로 매핑하는 6차 이터레이션 정의. SPEC-KTO-001 (KorService2) / SPEC-KTO-002 (KorWithService2) / SPEC-KTO-003 (PhotoGalleryService1) / SPEC-KTO-004 (GoCamping) / SPEC-KTO-005 (Odii) 의 공용 인프라(`KtoHttpClient`·`response-normalizer`·`tool-registry`·transport 3종·에러 모델·재시도 정책·`BASE_URL_MAP`) 100% 재사용. 사전 검증 완료 — `[ASSUMED]` 마커 0건. 신규 typed item `DurunubiCourseItem` (16 필드 + 인덱스 시그니처) + `DurunubiRouteItem` (5 필드 + 인덱스 시그니처) 두 entity 도입. 본 SPEC 은 현재까지 가장 작은 KTO SPEC (오퍼레이션 2 개) 이며, SPEC-KTO-004 GoCamping 과 동일한 패턴 C (suffix 없음 + 단일 path + 다국어 변체 미존재) 에 흡수. 신규 다국어 패턴 도입 없음. |
+| 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료, 실 키 스모크 검증 통과, main 머지 완료 |
+| 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. 한국관광공사 두루누비 정보 API(`Durunubi`, data.go.kr ID 15101974) 2 오퍼레이션을 MCP 도구로 매핑하는 6차 이터레이션 정의. |
 
 ---
 

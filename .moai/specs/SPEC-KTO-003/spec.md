@@ -1,7 +1,7 @@
 ---
 id: SPEC-KTO-003
-version: 0.2.0
-status: draft
+version: 1.0.0
+status: completed
 created: 2026-05-09
 updated: 2026-05-09
 author: Seonho Kim
@@ -15,8 +15,9 @@ issue_number: 0
 
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
-| 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. PhotoGalleryService1 관광사진 정보 API(data.go.kr ID 15101914) 를 MCP 도구로 매핑하는 3차 이터레이션 정의. SPEC-KTO-001 (KorService2) 및 SPEC-KTO-002 (KorWithService2) 의 공용 인프라(`KtoHttpClient`·`response-normalizer`·`tool-registry`·transport 3종·에러 모델·재시도 정책·`BASE_URL_MAP`) 100% 재사용. 사진 응답 필드 `gal*` prefix 를 위한 신규 typed item `PhotoGalleryItem` 도입. |
+| 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료, 실 키 스모크 검증 통과, main 머지 완료 |
 | 0.2.0 | 2026-05-09 | Seonho Kim | RUN 단계 실 호출로 service path/operation 검증·수정. PhotoGalleryService1 + 4 operations로 변경 (galleryList1, galleryDetailList1, gallerySearchList1, gallerySyncDetailList1). galContentTypeId 필드 추가. [ASSUMED] 마커 대부분 해소. |
+| 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. PhotoGalleryService1 관광사진 정보 API(data.go.kr ID 15101914) 를 MCP 도구로 매핑하는 3차 이터레이션 정의. |
 
 ---
 
