@@ -7,6 +7,7 @@ import { PhotoGalleryModule } from './kto/photo-gallery/photo-gallery.module';
 import { GoCampingModule } from './kto/go-camping/go-camping.module';
 import { AudioGuideModule } from './kto/audio-guide/audio-guide.module';
 import { DurunubiModule } from './kto/durunubi/durunubi.module';
+import { PetTourModule } from './kto/pet-tour/pet-tour.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { DurunubiModule } from './kto/durunubi/durunubi.module';
     GoCampingModule,
     AudioGuideModule,
     DurunubiModule,
+    PetTourModule,
   ],
 })
 export class AppModule {}

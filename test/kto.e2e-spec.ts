@@ -40,6 +40,8 @@ import { AudioGuideService } from '../src/kto/audio-guide/audio-guide.service';
 import { ODII_TOOLS } from '../src/kto/audio-guide/audio-guide.tools';
 import { DurunubiService } from '../src/kto/durunubi/durunubi.service';
 import { DURUNUBI_TOOLS } from '../src/kto/durunubi/durunubi.tools';
+import { PetTourService } from '../src/kto/pet-tour/pet-tour.service';
+import { PET_TOUR_TOOLS } from '../src/kto/pet-tour/pet-tour.tools';
 
 /** HTTP POST 요청 헬퍼 */
 function httpPost(
@@ -148,6 +150,7 @@ describe('KTO MCP E2E', () => {
   let goCampingService: GoCampingService;
   let audioGuideService: AudioGuideService;
   let durunubiService: DurunubiService;
+  let petTourService: PetTourService;
 
   beforeAll(async () => {
     appContext = await NestFactory.createApplicationContext(AppModule, {
@@ -159,6 +162,7 @@ describe('KTO MCP E2E', () => {
     goCampingService = appContext.get(GoCampingService);
     audioGuideService = appContext.get(AudioGuideService);
     durunubiService = appContext.get(DurunubiService);
+    petTourService = appContext.get(PetTourService);
   });
 
   afterAll(async () => {
@@ -166,7 +170,7 @@ describe('KTO MCP E2E', () => {
   });
 
   describe('도구 등록 검증', () => {
-    it('McpServer에 44개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개 + kto_durunubi_* 2개)가 모두 등록된다 (acceptance criterion 1)', () => {
+    it('McpServer에 48개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개 + kto_durunubi_* 2개 + kto_pet_* 4개)가 모두 등록된다 (acceptance criterion 1)', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test',
         version: '0.1.0',
@@ -178,12 +182,13 @@ describe('KTO MCP E2E', () => {
         { tools: GO_CAMPING_TOOLS, service: goCampingService },
         { tools: ODII_TOOLS, service: audioGuideService },
         { tools: DURUNUBI_TOOLS, service: durunubiService },
+        { tools: PET_TOUR_TOOLS, service: petTourService },
       ]);
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
       };
-      expect(Object.keys(server._registeredTools).length).toBe(44);
+      expect(Object.keys(server._registeredTools).length).toBe(48);
     });
 
     it('kto_durunubi_* 도구가 정확히 2개여야 한다 (SPEC-KTO-006 Scenario 2)', () => {
@@ -198,6 +203,7 @@ describe('KTO MCP E2E', () => {
         { tools: GO_CAMPING_TOOLS, service: goCampingService },
         { tools: ODII_TOOLS, service: audioGuideService },
         { tools: DURUNUBI_TOOLS, service: durunubiService },
+        { tools: PET_TOUR_TOOLS, service: petTourService },
       ]);
 
       const server = mcpServer as unknown as {
@@ -243,7 +249,7 @@ describe('KTO MCP E2E', () => {
       expect(mockDurunubiService.courseList).not.toHaveBeenCalled();
     });
 
-    it('kto_korean_* 15 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 + kto_durunubi_* 2 도구가 모두 포함된다', () => {
+    it('kto_korean_* 15 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 + kto_durunubi_* 2 + kto_pet_* 4 도구가 모두 포함된다', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test-2',
         version: '0.1.0',
@@ -255,6 +261,7 @@ describe('KTO MCP E2E', () => {
         { tools: GO_CAMPING_TOOLS, service: goCampingService },
         { tools: ODII_TOOLS, service: audioGuideService },
         { tools: DURUNUBI_TOOLS, service: durunubiService },
+        { tools: PET_TOUR_TOOLS, service: petTourService },
       ]);
 
       const server = mcpServer as unknown as {
@@ -280,9 +287,17 @@ describe('KTO MCP E2E', () => {
       for (const expectedTool of DURUNUBI_TOOLS) {
         expect(registeredNames).toContain(expectedTool.name);
       }
+      for (const expectedTool of PET_TOUR_TOOLS) {
+        expect(registeredNames).toContain(expectedTool.name);
+      }
       // 두루누비 도구 개별 확인
       expect(registeredNames).toContain('kto_durunubi_courseList');
       expect(registeredNames).toContain('kto_durunubi_routeList');
+      // 반려동물 도구 개별 확인 (kto_pet_* 4개)
+      expect(registeredNames).toContain('kto_pet_areaBasedList2');
+      expect(registeredNames).toContain('kto_pet_locationBasedList2');
+      expect(registeredNames).toContain('kto_pet_searchKeyword2');
+      expect(registeredNames).toContain('kto_pet_petTourSyncList2');
       // 필수 도구 개별 확인
       expect(registeredNames).toContain('kto_barrier_free_detailWithTour2');
       expect(registeredNames).toContain('kto_photo_galleryList1');
@@ -318,6 +333,7 @@ describe('KTO MCP E2E', () => {
         { tools: GO_CAMPING_TOOLS, service: goCampingService },
         { tools: ODII_TOOLS, service: audioGuideService },
         { tools: DURUNUBI_TOOLS, service: durunubiService },
+        { tools: PET_TOUR_TOOLS, service: petTourService },
       ]);
 
       const server = mcpServer as unknown as {
@@ -327,6 +343,135 @@ describe('KTO MCP E2E', () => {
         name.startsWith('kto_audio_'),
       );
       expect(audioTools).toHaveLength(8);
+    });
+
+    it('kto_pet_* 도구가 정확히 4개여야 한다 (SPEC-KTO-007 Scenario 2)', () => {
+      const mcpServer = new McpServer({
+        name: 'kto-mcp-pet-count-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServer, [
+        { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
+        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+        { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+        { tools: GO_CAMPING_TOOLS, service: goCampingService },
+        { tools: ODII_TOOLS, service: audioGuideService },
+        { tools: DURUNUBI_TOOLS, service: durunubiService },
+        { tools: PET_TOUR_TOOLS, service: petTourService },
+      ]);
+
+      const server = mcpServer as unknown as {
+        _registeredTools: Record<string, unknown>;
+      };
+      const petTools = Object.keys(server._registeredTools).filter((name) =>
+        name.startsWith('kto_pet_'),
+      );
+      expect(petTools).toHaveLength(4);
+    });
+
+    it('kto_pet_locationBasedList2: mapX만 전달 시 MCP 오류를 반환한다 (REQ-UNW-001, mapY/radius missing)', async () => {
+      const mockPetService = {
+        locationBasedList2: jest
+          .fn()
+          .mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as PetTourService;
+
+      const mcpServerPet1 = new McpServer({
+        name: 'kto-mcp-pet-location-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServerPet1, [
+        { tools: PET_TOUR_TOOLS, service: mockPetService },
+      ]);
+
+      const internalServer = mcpServerPet1 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_pet_locationBasedList2'];
+      expect(toolEntry).toBeDefined();
+
+      const result = (await toolEntry.handler({ mapX: 126.9779 })) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockPetService.locationBasedList2).not.toHaveBeenCalled();
+    });
+
+    it('kto_pet_searchKeyword2: keyword 미입력 시 MCP 오류를 반환한다 (REQ-UNW-001)', async () => {
+      const mockPetService = {
+        searchKeyword2: jest
+          .fn()
+          .mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as PetTourService;
+
+      const mcpServerPet2 = new McpServer({
+        name: 'kto-mcp-pet-search-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServerPet2, [
+        { tools: PET_TOUR_TOOLS, service: mockPetService },
+      ]);
+
+      const internalServer = mcpServerPet2 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_pet_searchKeyword2'];
+      expect(toolEntry).toBeDefined();
+
+      const result = (await toolEntry.handler({})) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockPetService.searchKeyword2).not.toHaveBeenCalled();
+    });
+
+    it('kto_pet_areaBasedList2: numOfRows=0 전달 시 MCP 오류를 반환한다 (REQ-UNW-001)', async () => {
+      const mockPetService = {
+        areaBasedList2: jest
+          .fn()
+          .mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as PetTourService;
+
+      const mcpServerPet3 = new McpServer({
+        name: 'kto-mcp-pet-area-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServerPet3, [
+        { tools: PET_TOUR_TOOLS, service: mockPetService },
+      ]);
+
+      const internalServer = mcpServerPet3 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_pet_areaBasedList2'];
+      expect(toolEntry).toBeDefined();
+
+      const result = (await toolEntry.handler({ numOfRows: 0 })) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockPetService.areaBasedList2).not.toHaveBeenCalled();
     });
 
     it('kto_audio_storyLocationBasedList: langCode만 전달 시 MCP 오류를 반환한다 (REQ-UNW-001, Scenario 4)', async () => {

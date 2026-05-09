@@ -34,4 +34,10 @@ describe('BASE_URL_MAP', () => {
       'http://apis.data.go.kr/B551011/Durunubi',
     );
   });
+
+  it('KorPetTourService2 URL이 등록되어 있어야 한다 (SPEC-KTO-007 REQ-OPT-001)', () => {
+    expect(BASE_URL_MAP.KorPetTourService2).toBe(
+      'http://apis.data.go.kr/B551011/KorPetTourService2',
+    );
+  });
 });
