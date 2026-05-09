@@ -44,6 +44,8 @@ import { PetTourService } from '../src/kto/pet-tour/pet-tour.service';
 import { PET_TOUR_TOOLS } from '../src/kto/pet-tour/pet-tour.tools';
 import { MedicalTourismService } from '../src/kto/medical-tourism/medical-tourism.service';
 import { MEDICAL_TOURISM_TOOLS } from '../src/kto/medical-tourism/medical-tourism.tools';
+import { WellnessTourismService } from '../src/kto/wellness-tourism/wellness-tourism.service';
+import { WELLNESS_TOURISM_TOOLS } from '../src/kto/wellness-tourism/wellness-tourism.tools';
 
 /** HTTP POST 요청 헬퍼 */
 function httpPost(
@@ -154,6 +156,7 @@ describe('KTO MCP E2E', () => {
   let durunubiService: DurunubiService;
   let petTourService: PetTourService;
   let medicalTourismService: MedicalTourismService;
+  let wellnessTourismService: WellnessTourismService;
 
   beforeAll(async () => {
     appContext = await NestFactory.createApplicationContext(AppModule, {
@@ -167,6 +170,7 @@ describe('KTO MCP E2E', () => {
     durunubiService = appContext.get(DurunubiService);
     petTourService = appContext.get(PetTourService);
     medicalTourismService = appContext.get(MedicalTourismService);
+    wellnessTourismService = appContext.get(WellnessTourismService);
   });
 
   afterAll(async () => {
@@ -174,7 +178,7 @@ describe('KTO MCP E2E', () => {
   });
 
   describe('도구 등록 검증', () => {
-    it('McpServer에 55개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개 + kto_durunubi_* 2개 + kto_pet_* 4개 + kto_medical_* 7개)가 모두 등록된다 (acceptance criterion 1)', () => {
+    it('McpServer에 63개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개 + kto_durunubi_* 2개 + kto_pet_* 4개 + kto_medical_* 7개 + kto_wellness_* 8개)가 모두 등록된다 (acceptance criterion 1)', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test',
         version: '0.1.0',
@@ -188,12 +192,13 @@ describe('KTO MCP E2E', () => {
         { tools: DURUNUBI_TOOLS, service: durunubiService },
         { tools: PET_TOUR_TOOLS, service: petTourService },
         { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
+        { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
       ]);
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
       };
-      expect(Object.keys(server._registeredTools).length).toBe(55);
+      expect(Object.keys(server._registeredTools).length).toBe(63);
     });
 
     it('kto_durunubi_* 도구가 정확히 2개여야 한다 (SPEC-KTO-006 Scenario 2)', () => {
@@ -254,7 +259,7 @@ describe('KTO MCP E2E', () => {
       expect(mockDurunubiService.courseList).not.toHaveBeenCalled();
     });
 
-    it('kto_korean_* 15 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 + kto_durunubi_* 2 + kto_pet_* 4 + kto_medical_* 7 도구가 모두 포함된다', () => {
+    it('kto_korean_* 15 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 + kto_durunubi_* 2 + kto_pet_* 4 + kto_medical_* 7 + kto_wellness_* 8 도구가 모두 포함된다', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test-2',
         version: '0.1.0',
@@ -268,6 +273,7 @@ describe('KTO MCP E2E', () => {
         { tools: DURUNUBI_TOOLS, service: durunubiService },
         { tools: PET_TOUR_TOOLS, service: petTourService },
         { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
+        { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
       ]);
 
       const server = mcpServer as unknown as {
@@ -315,6 +321,15 @@ describe('KTO MCP E2E', () => {
       expect(registeredNames).toContain('kto_medical_detailMdclTursm');
       expect(registeredNames).toContain('kto_medical_detailCommon');
       expect(registeredNames).toContain('kto_medical_detailIntro');
+      // 웰니스관광 도구 개별 확인 (kto_wellness_* 8개)
+      expect(registeredNames).toContain('kto_wellness_areaBasedList');
+      expect(registeredNames).toContain('kto_wellness_locationBasedList');
+      expect(registeredNames).toContain('kto_wellness_searchKeyword');
+      expect(registeredNames).toContain('kto_wellness_wellnessTursmSyncList');
+      expect(registeredNames).toContain('kto_wellness_detailCommon');
+      expect(registeredNames).toContain('kto_wellness_detailIntro');
+      expect(registeredNames).toContain('kto_wellness_detailInfo');
+      expect(registeredNames).toContain('kto_wellness_detailImage');
       // 필수 도구 개별 확인
       expect(registeredNames).toContain('kto_barrier_free_detailWithTour2');
       expect(registeredNames).toContain('kto_photo_galleryList1');
@@ -402,6 +417,184 @@ describe('KTO MCP E2E', () => {
         name.startsWith('kto_medical_'),
       );
       expect(medicalTools).toHaveLength(7);
+    });
+
+    it('kto_wellness_* 도구가 정확히 8개여야 한다 (SPEC-KTO-009 S2)', () => {
+      const mcpServer = new McpServer({
+        name: 'kto-mcp-wellness-count-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServer, [
+        { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
+      ]);
+
+      const server = mcpServer as unknown as {
+        _registeredTools: Record<string, unknown>;
+      };
+      const wellnessTools = Object.keys(server._registeredTools).filter(
+        (name) => name.startsWith('kto_wellness_'),
+      );
+      expect(wellnessTools).toHaveLength(8);
+    });
+
+    it('kto_wellness_ldongCode 도구가 존재하지 않아야 한다 (R1 정책)', () => {
+      const mcpServer = new McpServer({
+        name: 'kto-mcp-wellness-ldong-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServer, [
+        { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
+      ]);
+
+      const server = mcpServer as unknown as {
+        _registeredTools: Record<string, unknown>;
+      };
+      expect(Object.keys(server._registeredTools)).not.toContain(
+        'kto_wellness_ldongCode',
+      );
+    });
+
+    it('kto_wellness_areaBasedList: langDivCd 누락 시 MCP 오류를 반환한다 (SPEC-KTO-009 REQ-UNW-001, S4)', async () => {
+      const mockWellnessService = {
+        areaBasedList: jest
+          .fn()
+          .mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as WellnessTourismService;
+
+      const mcpServerW1 = new McpServer({
+        name: 'kto-mcp-wellness-area-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServerW1, [
+        { tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService },
+      ]);
+
+      const internalServer = mcpServerW1 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_wellness_areaBasedList'];
+      expect(toolEntry).toBeDefined();
+
+      const result = (await toolEntry.handler({})) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockWellnessService.areaBasedList).not.toHaveBeenCalled();
+    });
+
+    it('kto_wellness_detailIntro: contentTypeId 누락 시 MCP 오류를 반환한다 (SPEC-KTO-009 S5)', async () => {
+      const mockWellnessService = {
+        detailIntro: jest.fn().mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as WellnessTourismService;
+
+      const mcpServerW2 = new McpServer({
+        name: 'kto-mcp-wellness-detail-intro-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServerW2, [
+        { tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService },
+      ]);
+
+      const internalServer = mcpServerW2 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_wellness_detailIntro'];
+      expect(toolEntry).toBeDefined();
+
+      // langDivCd/contentId 있음, contentTypeId 없음
+      const result = (await toolEntry.handler({
+        langDivCd: 'KOR',
+        contentId: '2994116',
+      })) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockWellnessService.detailIntro).not.toHaveBeenCalled();
+    });
+
+    it('kto_wellness_detailInfo: contentTypeId 누락 시 MCP 오류를 반환한다 (SPEC-KTO-009 S5)', async () => {
+      const mockWellnessService = {
+        detailInfo: jest.fn().mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as WellnessTourismService;
+
+      const mcpServerW3 = new McpServer({
+        name: 'kto-mcp-wellness-detail-info-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServerW3, [
+        { tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService },
+      ]);
+
+      const internalServer = mcpServerW3 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_wellness_detailInfo'];
+      expect(toolEntry).toBeDefined();
+
+      const result = (await toolEntry.handler({
+        langDivCd: 'KOR',
+        contentId: '2994116',
+      })) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockWellnessService.detailInfo).not.toHaveBeenCalled();
+    });
+
+    it('kto_wellness_locationBasedList: langDivCd만 전달 시 MCP 오류를 반환한다 (mapX/mapY/radius missing)', async () => {
+      const mockWellnessService = {
+        locationBasedList: jest
+          .fn()
+          .mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as WellnessTourismService;
+
+      const mcpServerW4 = new McpServer({
+        name: 'kto-mcp-wellness-location-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServerW4, [
+        { tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService },
+      ]);
+
+      const internalServer = mcpServerW4 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_wellness_locationBasedList'];
+      expect(toolEntry).toBeDefined();
+
+      const result = (await toolEntry.handler({ langDivCd: 'KOR' })) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockWellnessService.locationBasedList).not.toHaveBeenCalled();
     });
 
     it('kto_medical_areaBasedList: langDivCd 누락 시 MCP 오류를 반환한다 (SPEC-KTO-008 REQ-UNW-001)', async () => {
