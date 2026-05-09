@@ -52,4 +52,10 @@ describe('BASE_URL_MAP', () => {
       'http://apis.data.go.kr/B551011/WellnessTursmService',
     );
   });
+
+  it('PhokoAwrdService URL이 등록되어 있어야 한다 (SPEC-KTO-010 REQ-OPT-001)', () => {
+    expect(BASE_URL_MAP.PhokoAwrdService).toBe(
+      'http://apis.data.go.kr/B551011/PhokoAwrdService',
+    );
+  });
 });

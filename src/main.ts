@@ -21,6 +21,8 @@ import { MedicalTourismService } from './kto/medical-tourism/medical-tourism.ser
 import { MEDICAL_TOURISM_TOOLS } from './kto/medical-tourism/medical-tourism.tools';
 import { WellnessTourismService } from './kto/wellness-tourism/wellness-tourism.service';
 import { WELLNESS_TOURISM_TOOLS } from './kto/wellness-tourism/wellness-tourism.tools';
+import { PhotoAwardService } from './kto/photo-award/photo-award.service';
+import { PHOTO_AWARD_TOOLS } from './kto/photo-award/photo-award.tools';
 import { StdioTransportAdapter } from './mcp/transports/stdio.adapter';
 import { HttpStreamableTransportAdapter } from './mcp/transports/http-streamable.adapter';
 import { HttpTransportAdapter } from './mcp/transports/http.adapter';
@@ -40,7 +42,7 @@ async function bootstrap() {
     version: '0.1.0',
   });
 
-  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001, SPEC-KTO-003 REQ-KTO3-001, SPEC-KTO-004 REQ-KTO4-001, SPEC-KTO-005 REQ-KTO5-001, SPEC-KTO-006 REQ-KTO6-001, SPEC-KTO-007 REQ-KTO7-001, SPEC-KTO-008 REQ-KTO8-001, SPEC-KTO-009 REQ-KTO9-001)
+  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001, SPEC-KTO-003 REQ-KTO3-001, SPEC-KTO-004 REQ-KTO4-001, SPEC-KTO-005 REQ-KTO5-001, SPEC-KTO-006 REQ-KTO6-001, SPEC-KTO-007 REQ-KTO7-001, SPEC-KTO-008 REQ-KTO8-001, SPEC-KTO-009 REQ-KTO9-001, SPEC-KTO-010 REQ-KTO10-001)
   const koreanTourInfoService = app.get(KoreanTourInfoService);
   const barrierFreeTourInfoService = app.get(BarrierFreeTourInfoService);
   const photoGalleryService = app.get(PhotoGalleryService);
@@ -50,6 +52,8 @@ async function bootstrap() {
   const petTourService = app.get(PetTourService);
   const medicalTourismService = app.get(MedicalTourismService);
   const wellnessTourismService = app.get(WellnessTourismService);
+  // KTO 10/10 — final API integration
+  const photoAwardService = app.get(PhotoAwardService);
   registerAll(mcpServer, [
     { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanTourInfoService },
     {
@@ -63,6 +67,7 @@ async function bootstrap() {
     { tools: PET_TOUR_TOOLS, service: petTourService },
     { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
     { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
+    { tools: PHOTO_AWARD_TOOLS, service: photoAwardService },
   ]);
 
   // transport 선택 및 시작 (REQ-KTO-002)

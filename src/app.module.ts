@@ -10,6 +10,7 @@ import { DurunubiModule } from './kto/durunubi/durunubi.module';
 import { PetTourModule } from './kto/pet-tour/pet-tour.module';
 import { MedicalTourismModule } from './kto/medical-tourism/medical-tourism.module';
 import { WellnessTourismModule } from './kto/wellness-tourism/wellness-tourism.module';
+import { PhotoAwardModule } from './kto/photo-award/photo-award.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { WellnessTourismModule } from './kto/wellness-tourism/wellness-tourism.m
     PetTourModule,
     MedicalTourismModule,
     WellnessTourismModule,
+    PhotoAwardModule,
   ],
 })
 export class AppModule {}

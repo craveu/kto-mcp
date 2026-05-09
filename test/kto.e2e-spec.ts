@@ -46,6 +46,8 @@ import { MedicalTourismService } from '../src/kto/medical-tourism/medical-touris
 import { MEDICAL_TOURISM_TOOLS } from '../src/kto/medical-tourism/medical-tourism.tools';
 import { WellnessTourismService } from '../src/kto/wellness-tourism/wellness-tourism.service';
 import { WELLNESS_TOURISM_TOOLS } from '../src/kto/wellness-tourism/wellness-tourism.tools';
+import { PhotoAwardService } from '../src/kto/photo-award/photo-award.service';
+import { PHOTO_AWARD_TOOLS } from '../src/kto/photo-award/photo-award.tools';
 
 /** HTTP POST 요청 헬퍼 */
 function httpPost(
@@ -157,6 +159,7 @@ describe('KTO MCP E2E', () => {
   let petTourService: PetTourService;
   let medicalTourismService: MedicalTourismService;
   let wellnessTourismService: WellnessTourismService;
+  let photoAwardService: PhotoAwardService;
 
   beforeAll(async () => {
     appContext = await NestFactory.createApplicationContext(AppModule, {
@@ -171,6 +174,7 @@ describe('KTO MCP E2E', () => {
     petTourService = appContext.get(PetTourService);
     medicalTourismService = appContext.get(MedicalTourismService);
     wellnessTourismService = appContext.get(WellnessTourismService);
+    photoAwardService = appContext.get(PhotoAwardService);
   });
 
   afterAll(async () => {
@@ -178,7 +182,7 @@ describe('KTO MCP E2E', () => {
   });
 
   describe('도구 등록 검증', () => {
-    it('McpServer에 63개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개 + kto_durunubi_* 2개 + kto_pet_* 4개 + kto_medical_* 7개 + kto_wellness_* 8개)가 모두 등록된다 (acceptance criterion 1)', () => {
+    it('McpServer에 65개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개 + kto_durunubi_* 2개 + kto_pet_* 4개 + kto_medical_* 7개 + kto_wellness_* 8개 + kto_contest_* 2개)가 모두 등록된다 (acceptance criterion 1)', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test',
         version: '0.1.0',
@@ -193,12 +197,13 @@ describe('KTO MCP E2E', () => {
         { tools: PET_TOUR_TOOLS, service: petTourService },
         { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
         { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
+        { tools: PHOTO_AWARD_TOOLS, service: photoAwardService },
       ]);
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
       };
-      expect(Object.keys(server._registeredTools).length).toBe(63);
+      expect(Object.keys(server._registeredTools).length).toBe(65);
     });
 
     it('kto_durunubi_* 도구가 정확히 2개여야 한다 (SPEC-KTO-006 Scenario 2)', () => {
@@ -259,7 +264,7 @@ describe('KTO MCP E2E', () => {
       expect(mockDurunubiService.courseList).not.toHaveBeenCalled();
     });
 
-    it('kto_korean_* 15 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 + kto_durunubi_* 2 + kto_pet_* 4 + kto_medical_* 7 + kto_wellness_* 8 도구가 모두 포함된다', () => {
+    it('kto_korean_* 15 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 + kto_durunubi_* 2 + kto_pet_* 4 + kto_medical_* 7 + kto_wellness_* 8 + kto_contest_* 2 도구가 모두 포함된다', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test-2',
         version: '0.1.0',
@@ -274,6 +279,7 @@ describe('KTO MCP E2E', () => {
         { tools: PET_TOUR_TOOLS, service: petTourService },
         { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
         { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
+        { tools: PHOTO_AWARD_TOOLS, service: photoAwardService },
       ]);
 
       const server = mcpServer as unknown as {
@@ -330,6 +336,9 @@ describe('KTO MCP E2E', () => {
       expect(registeredNames).toContain('kto_wellness_detailIntro');
       expect(registeredNames).toContain('kto_wellness_detailInfo');
       expect(registeredNames).toContain('kto_wellness_detailImage');
+      // 관광공모전 도구 개별 확인 (kto_contest_* 2개)
+      expect(registeredNames).toContain('kto_contest_phokoAwrdList');
+      expect(registeredNames).toContain('kto_contest_phokoAwrdSyncList');
       // 필수 도구 개별 확인
       expect(registeredNames).toContain('kto_barrier_free_detailWithTour2');
       expect(registeredNames).toContain('kto_photo_galleryList1');
