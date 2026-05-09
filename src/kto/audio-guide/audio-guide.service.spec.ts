@@ -3,6 +3,7 @@ import { AudioGuideService } from './audio-guide.service';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoListResponse } from '../common/types';
 import type { OdiiStoryItem, OdiiThemeItem } from './types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 
 describe('AudioGuideService', () => {
   let service: AudioGuideService;
@@ -17,6 +18,11 @@ describe('AudioGuideService', () => {
     service = new AudioGuideService(mockHttpClient);
   });
 
+  const testCredentials: KtoCredentials = {
+    serviceKey: 'TEST_KEY',
+    preencoded: false,
+  };
+
   const mockListResponse = <T>(items: T[]): KtoListResponse<T> => ({
     items,
     numOfRows: 10,
@@ -27,7 +33,7 @@ describe('AudioGuideService', () => {
   it('모든 메서드가 service: Odii로 호출해야 한다', async () => {
     mockRequest.mockResolvedValue(mockListResponse([]));
 
-    await service.storyBasedList({ langCode: 'ko' });
+    await service.storyBasedList({ langCode: 'ko' }, testCredentials);
 
     expect(mockRequest).toHaveBeenCalledWith(
       expect.objectContaining({ service: 'Odii' }),
@@ -48,10 +54,13 @@ describe('AudioGuideService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.storyBasedList({
-        langCode: 'ko',
-        numOfRows: 1,
-      });
+      const result = await service.storyBasedList(
+        {
+          langCode: 'ko',
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -72,7 +81,10 @@ describe('AudioGuideService', () => {
     it('langCode=ja도 outbound 호출을 실행해야 한다 (enum 미강제)', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse<OdiiStoryItem>([]));
 
-      const result = await service.storyBasedList({ langCode: 'ja' });
+      const result = await service.storyBasedList(
+        { langCode: 'ja' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -92,7 +104,10 @@ describe('AudioGuideService', () => {
     it('syncStatus를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.storyBasedSyncList({ langCode: 'ko', syncStatus: 'U' });
+      await service.storyBasedSyncList(
+        { langCode: 'ko', syncStatus: 'U' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -114,12 +129,15 @@ describe('AudioGuideService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.storyLocationBasedList({
-        langCode: 'ko',
-        mapX: 126.978,
-        mapY: 37.5665,
-        radius: 5000,
-      });
+      const result = await service.storyLocationBasedList(
+        {
+          langCode: 'ko',
+          mapX: 126.978,
+          mapY: 37.5665,
+          radius: 5000,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -141,7 +159,10 @@ describe('AudioGuideService', () => {
     it('keyword와 langCode를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.storySearchList({ langCode: 'ko', keyword: '경복궁' });
+      await service.storySearchList(
+        { langCode: 'ko', keyword: '경복궁' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -170,7 +191,10 @@ describe('AudioGuideService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.themeBasedList({ langCode: 'ko' });
+      const result = await service.themeBasedList(
+        { langCode: 'ko' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -188,7 +212,10 @@ describe('AudioGuideService', () => {
     it('langCode=en은 totalCount=0 정상 응답이어야 한다 (KTO 미정비 정책)', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse<OdiiThemeItem>([]));
 
-      const result = await service.themeBasedList({ langCode: 'en' });
+      const result = await service.themeBasedList(
+        { langCode: 'en' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -209,7 +236,7 @@ describe('AudioGuideService', () => {
     it('syncStatus 없이도 호출 가능해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.themeBasedSyncList({ langCode: 'ko' });
+      await service.themeBasedSyncList({ langCode: 'ko' }, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -224,12 +251,15 @@ describe('AudioGuideService', () => {
     it('mapX/mapY/radius와 langCode를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.themeLocationBasedList({
-        langCode: 'ko',
-        mapX: 126.978,
-        mapY: 37.5665,
-        radius: 10000,
-      });
+      await service.themeLocationBasedList(
+        {
+          langCode: 'ko',
+          mapX: 126.978,
+          mapY: 37.5665,
+          radius: 10000,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -252,10 +282,13 @@ describe('AudioGuideService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.themeSearchList({
-        langCode: 'ko',
-        keyword: '서울',
-      });
+      const result = await service.themeSearchList(
+        {
+          langCode: 'ko',
+          keyword: '서울',
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({

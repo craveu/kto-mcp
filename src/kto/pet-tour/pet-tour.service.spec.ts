@@ -3,6 +3,7 @@ import { PetTourService } from './pet-tour.service';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoListResponse } from '../common/types';
 import type { KorPetTourItem } from './types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 
 describe('PetTourService', () => {
   let service: PetTourService;
@@ -17,6 +18,11 @@ describe('PetTourService', () => {
     service = new PetTourService(mockHttpClient);
   });
 
+  const testCredentials: KtoCredentials = {
+    serviceKey: 'TEST_KEY',
+    preencoded: false,
+  };
+
   const mockListResponse = <T>(items: T[]): KtoListResponse<T> => ({
     items,
     numOfRows: 10,
@@ -27,7 +33,7 @@ describe('PetTourService', () => {
   it('모든 메서드가 service: KorPetTourService2로 호출해야 한다 (SPEC-KTO-007 REQ-OPT-001)', async () => {
     mockRequest.mockResolvedValue(mockListResponse([]));
 
-    await service.areaBasedList2({});
+    await service.areaBasedList2({}, testCredentials);
 
     expect(mockRequest).toHaveBeenCalledWith(
       expect.objectContaining({ service: 'KorPetTourService2' }),
@@ -46,10 +52,13 @@ describe('PetTourService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.areaBasedList2({
-        areaCode: '1',
-        numOfRows: 1,
-      });
+      const result = await service.areaBasedList2(
+        {
+          areaCode: '1',
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -68,7 +77,7 @@ describe('PetTourService', () => {
     it('빈 파라미터로도 호출 가능해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.areaBasedList2({});
+      await service.areaBasedList2({}, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -98,7 +107,7 @@ describe('PetTourService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.areaBasedList2({});
+      const result = await service.areaBasedList2({}, testCredentials);
       const item = result.items[0];
 
       expect(item.contentid).toBe('2769783');
@@ -121,12 +130,15 @@ describe('PetTourService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.locationBasedList2({
-        mapX: 126.9779,
-        mapY: 37.5664,
-        radius: 20000,
-        numOfRows: 1,
-      });
+      const result = await service.locationBasedList2(
+        {
+          mapX: 126.9779,
+          mapY: 37.5664,
+          radius: 20000,
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -146,11 +158,14 @@ describe('PetTourService', () => {
     it('mapX/mapY/radius 파라미터가 요청에 포함되어야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.locationBasedList2({
-        mapX: 126.9779,
-        mapY: 37.5664,
-        radius: 5000,
-      });
+      await service.locationBasedList2(
+        {
+          mapX: 126.9779,
+          mapY: 37.5664,
+          radius: 5000,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -175,10 +190,13 @@ describe('PetTourService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.searchKeyword2({
-        keyword: '카페',
-        numOfRows: 1,
-      });
+      const result = await service.searchKeyword2(
+        {
+          keyword: '카페',
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -196,7 +214,7 @@ describe('PetTourService', () => {
     it('keyword 파라미터가 요청에 포함되어야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.searchKeyword2({ keyword: '반려견' });
+      await service.searchKeyword2({ keyword: '반려견' }, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -221,7 +239,10 @@ describe('PetTourService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.petTourSyncList2({ numOfRows: 1 });
+      const result = await service.petTourSyncList2(
+        { numOfRows: 1 },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -236,7 +257,7 @@ describe('PetTourService', () => {
     it('빈 파라미터로도 호출 가능해야 한다 (showflag/syncModTime 선택)', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.petTourSyncList2({});
+      await service.petTourSyncList2({}, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -255,7 +276,7 @@ describe('PetTourService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.petTourSyncList2({});
+      const result = await service.petTourSyncList2({}, testCredentials);
       const item = result.items[0];
 
       expect(item.showflag).toBe('0');

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoServiceName } from '../common/constants';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 import type { OdiiStoryItem, OdiiThemeItem } from './types';
 import type {
   AgStoryBasedListDto,
@@ -39,11 +40,13 @@ export class AudioGuideService {
    */
   async storyBasedList(
     dto: AgStoryBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<OdiiStoryItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'storyBasedList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -54,11 +57,13 @@ export class AudioGuideService {
    */
   async storyBasedSyncList(
     dto: AgStoryBasedSyncListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<OdiiStoryItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'storyBasedSyncList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -70,11 +75,13 @@ export class AudioGuideService {
    */
   async storyLocationBasedList(
     dto: AgStoryLocationBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<OdiiStoryItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'storyLocationBasedList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -85,11 +92,13 @@ export class AudioGuideService {
    */
   async storySearchList(
     dto: AgStorySearchListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<OdiiStoryItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'storySearchList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -103,11 +112,13 @@ export class AudioGuideService {
    */
   async themeBasedList(
     dto: AgThemeBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<OdiiThemeItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'themeBasedList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -118,11 +129,13 @@ export class AudioGuideService {
    */
   async themeBasedSyncList(
     dto: AgThemeBasedSyncListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<OdiiThemeItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'themeBasedSyncList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -134,11 +147,13 @@ export class AudioGuideService {
    */
   async themeLocationBasedList(
     dto: AgThemeLocationBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<OdiiThemeItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'themeLocationBasedList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -149,11 +164,13 @@ export class AudioGuideService {
    */
   async themeSearchList(
     dto: AgThemeSearchListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<OdiiThemeItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'themeSearchList',
       params: { ...dto },
+      credentials,
     });
   }
 }

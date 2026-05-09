@@ -3,6 +3,7 @@ import { GoCampingService } from './go-camping.service';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoListResponse } from '../common/types';
 import type { GoCampingItem, GoCampingImageItem } from './types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 
 describe('GoCampingService', () => {
   let service: GoCampingService;
@@ -17,6 +18,11 @@ describe('GoCampingService', () => {
     service = new GoCampingService(mockHttpClient);
   });
 
+  const testCredentials: KtoCredentials = {
+    serviceKey: 'TEST_KEY',
+    preencoded: false,
+  };
+
   const mockListResponse = <T>(items: T[]): KtoListResponse<T> => ({
     items,
     numOfRows: 10,
@@ -27,7 +33,7 @@ describe('GoCampingService', () => {
   it('모든 메서드가 service: GoCamping으로 호출해야 한다', async () => {
     mockRequest.mockResolvedValue(mockListResponse([]));
 
-    await service.basedList({});
+    await service.basedList({}, testCredentials);
 
     expect(mockRequest).toHaveBeenCalledWith(
       expect.objectContaining({ service: 'GoCamping' }),
@@ -45,7 +51,7 @@ describe('GoCampingService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.basedList({ numOfRows: 5 });
+      const result = await service.basedList({ numOfRows: 5 }, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -64,7 +70,7 @@ describe('GoCampingService', () => {
     it('빈 파라미터로도 호출 가능해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.basedList({});
+      await service.basedList({}, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -87,7 +93,7 @@ describe('GoCampingService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.basedList({});
+      const result = await service.basedList({}, testCredentials);
       const item = result.items[0];
 
       expect(item.contentId).toBe('200');
@@ -103,10 +109,13 @@ describe('GoCampingService', () => {
     it('syncStatus를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([{ contentId: '1' }]));
 
-      await service.basedSyncList({
-        syncStatus: 'U',
-        syncModTime: '20240101000000',
-      });
+      await service.basedSyncList(
+        {
+          syncStatus: 'U',
+          syncModTime: '20240101000000',
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -123,7 +132,7 @@ describe('GoCampingService', () => {
     it('파라미터 없이도 호출 가능해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.basedSyncList({});
+      await service.basedSyncList({}, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -141,11 +150,14 @@ describe('GoCampingService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.locationBasedList({
-        mapX: 126.978,
-        mapY: 37.5665,
-        radius: 5000,
-      });
+      const result = await service.locationBasedList(
+        {
+          mapX: 126.978,
+          mapY: 37.5665,
+          radius: 5000,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -169,7 +181,10 @@ describe('GoCampingService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.searchList({ keyword: '가평' });
+      const result = await service.searchList(
+        { keyword: '가평' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -198,7 +213,10 @@ describe('GoCampingService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockImages));
 
-      const result = await service.imageList({ contentId: '100' });
+      const result = await service.imageList(
+        { contentId: '100' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({

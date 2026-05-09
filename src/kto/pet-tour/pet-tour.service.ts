@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoServiceName } from '../common/constants';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 import type { KorPetTourItem } from './types';
 import type {
   PtAreaBasedListDto,
@@ -29,11 +30,13 @@ export class PetTourService {
    */
   async areaBasedList2(
     dto: PtAreaBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<KorPetTourItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'areaBasedList2',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -43,11 +46,13 @@ export class PetTourService {
    */
   async locationBasedList2(
     dto: PtLocationBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<KorPetTourItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'locationBasedList2',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -57,11 +62,13 @@ export class PetTourService {
    */
   async searchKeyword2(
     dto: PtSearchKeywordDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<KorPetTourItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'searchKeyword2',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -72,11 +79,13 @@ export class PetTourService {
    */
   async petTourSyncList2(
     dto: PtPetTourSyncListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<KorPetTourItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'petTourSyncList2',
       params: { ...dto },
+      credentials,
     });
   }
 }

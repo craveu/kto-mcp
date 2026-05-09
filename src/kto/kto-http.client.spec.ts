@@ -1,15 +1,20 @@
 import nock from 'nock';
 import { KtoHttpClient } from './kto-http.client';
 import { KtoApiError } from './common/kto-error';
+import type { KtoCredentials } from '../mcp/session-credentials.store';
 
 const TEST_SERVICE_KEY = 'test-service-key-1234';
+const TEST_CREDENTIALS: KtoCredentials = {
+  serviceKey: TEST_SERVICE_KEY,
+  preencoded: false,
+};
 
 describe('KtoHttpClient', () => {
   let client: KtoHttpClient;
 
   beforeEach(() => {
     // 테스트 속도를 위해 초기 지연 시간을 1ms로 단축
-    client = new KtoHttpClient(TEST_SERVICE_KEY, false, 1);
+    client = new KtoHttpClient(1);
     nock.cleanAll();
   });
 
@@ -43,6 +48,7 @@ describe('KtoHttpClient', () => {
         service: 'KorService2',
         operation: 'areaBasedList2',
         params: { areaCode: '1' },
+        credentials: TEST_CREDENTIALS,
       });
 
       expect(result.items).toHaveLength(2);
@@ -71,7 +77,11 @@ describe('KtoHttpClient', () => {
           },
         });
 
-      await client.request({ service: 'KorService2', operation: 'areaCode2' });
+      await client.request({
+        service: 'KorService2',
+        operation: 'areaCode2',
+        credentials: TEST_CREDENTIALS,
+      });
 
       expect(capturedQuery['MobileOS']).toBe('ETC');
       expect(capturedQuery['MobileApp']).toBe('kto-mcp');
@@ -98,9 +108,64 @@ describe('KtoHttpClient', () => {
       const result = await client.request({
         service: 'EngService2',
         operation: 'areaBasedList2',
+        credentials: TEST_CREDENTIALS,
       });
 
       expect(result.items).toEqual([]);
+    });
+
+    it('동일 클라이언트 인스턴스로 두 다른 credentials 호출 시 각각 독립적으로 처리되어야 한다', async () => {
+      const creds1: KtoCredentials = {
+        serviceKey: 'key-user-1',
+        preencoded: false,
+      };
+      const creds2: KtoCredentials = {
+        serviceKey: 'key-user-2',
+        preencoded: false,
+      };
+
+      let capturedKey1 = '';
+      let capturedKey2 = '';
+
+      nock('http://apis.data.go.kr')
+        .get('/B551011/KorService2/areaCode2')
+        .query((q) => {
+          capturedKey1 = (q as Record<string, string>)['serviceKey'];
+          return true;
+        })
+        .reply(200, {
+          response: {
+            header: { resultCode: '0000', resultMsg: 'OK' },
+            body: { items: '', numOfRows: 1, pageNo: 1, totalCount: 0 },
+          },
+        });
+
+      nock('http://apis.data.go.kr')
+        .get('/B551011/KorService2/areaCode2')
+        .query((q) => {
+          capturedKey2 = (q as Record<string, string>)['serviceKey'];
+          return true;
+        })
+        .reply(200, {
+          response: {
+            header: { resultCode: '0000', resultMsg: 'OK' },
+            body: { items: '', numOfRows: 1, pageNo: 1, totalCount: 0 },
+          },
+        });
+
+      await client.request({
+        service: 'KorService2',
+        operation: 'areaCode2',
+        credentials: creds1,
+      });
+      await client.request({
+        service: 'KorService2',
+        operation: 'areaCode2',
+        credentials: creds2,
+      });
+
+      expect(capturedKey1).toBe('key-user-1');
+      expect(capturedKey2).toBe('key-user-2');
     });
   });
 
@@ -127,6 +192,7 @@ describe('KtoHttpClient', () => {
       const result = await client.request({
         service: 'KorService2',
         operation: 'areaBasedList2',
+        credentials: TEST_CREDENTIALS,
       });
 
       expect(result.items).toHaveLength(1);
@@ -153,6 +219,7 @@ describe('KtoHttpClient', () => {
         await client.request({
           service: 'KorService2',
           operation: 'areaBasedList2',
+          credentials: TEST_CREDENTIALS,
         });
       } catch (e) {
         caught = e as KtoApiError;
@@ -186,6 +253,7 @@ describe('KtoHttpClient', () => {
           service: 'PhotoGalleryService1',
           operation: 'galleryDetailList1',
           params: { galContentId: '1002144' },
+          credentials: TEST_CREDENTIALS,
         });
       } catch (e) {
         caught = e as KtoApiError;
@@ -219,6 +287,7 @@ describe('KtoHttpClient', () => {
         await client.request({
           service: 'KorService2',
           operation: 'areaBasedList2',
+          credentials: TEST_CREDENTIALS,
         });
       } catch (e) {
         caught = e as KtoApiError;
@@ -248,6 +317,7 @@ describe('KtoHttpClient', () => {
         await client.request({
           service: 'KorService2',
           operation: 'areaBasedList2',
+          credentials: TEST_CREDENTIALS,
         });
         fail('에러가 throw되어야 한다');
       } catch (e) {
@@ -277,6 +347,7 @@ describe('KtoHttpClient', () => {
       const result = await client.request({
         service: 'KorService2',
         operation: 'areaBasedList2',
+        credentials: TEST_CREDENTIALS,
       });
 
       expect(result.items).toEqual([]);

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoServiceName } from '../common/constants';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 import type { MdclTursmItem } from './types';
 import type {
   MtAreaBasedListDto,
@@ -33,11 +34,13 @@ export class MedicalTourismService {
    */
   async areaBasedList(
     dto: MtAreaBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<MdclTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'areaBasedList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -47,11 +50,13 @@ export class MedicalTourismService {
    */
   async locationBasedList(
     dto: MtLocationBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<MdclTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'locationBasedList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -61,11 +66,13 @@ export class MedicalTourismService {
    */
   async searchKeyword(
     dto: MtSearchKeywordDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<MdclTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'searchKeyword',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -75,11 +82,13 @@ export class MedicalTourismService {
    */
   async mdclTursmSyncList(
     dto: MtMdclTursmSyncListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<MdclTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'mdclTursmSyncList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -89,11 +98,13 @@ export class MedicalTourismService {
    */
   async detailMdclTursm(
     dto: MtDetailMdclTursmDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<MdclTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailMdclTursm',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -103,11 +114,13 @@ export class MedicalTourismService {
    */
   async detailCommon(
     dto: MtDetailCommonDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<MdclTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailCommon',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -117,11 +130,13 @@ export class MedicalTourismService {
    */
   async detailIntro(
     dto: MtDetailIntroDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<MdclTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailIntro',
       params: { ...dto },
+      credentials,
     });
   }
 }

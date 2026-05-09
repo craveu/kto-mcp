@@ -1,6 +1,7 @@
 import { KoreanTourInfoService } from './korean-tour-info.service';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 
 describe('KoreanTourInfoService', () => {
   let service: KoreanTourInfoService;
@@ -15,6 +16,11 @@ describe('KoreanTourInfoService', () => {
     service = new KoreanTourInfoService(mockHttpClient);
   });
 
+  const testCredentials: KtoCredentials = {
+    serviceKey: 'TEST_KEY',
+    preencoded: false,
+  };
+
   const mockListResponse = <T>(items: T[]): KtoListResponse<T> => ({
     items,
     numOfRows: 10,
@@ -27,7 +33,10 @@ describe('KoreanTourInfoService', () => {
       const mockItems = [{ contentid: '1', title: '경복궁' }];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.areaBasedList2({ areaCode: '1' });
+      const result = await service.areaBasedList2(
+        { areaCode: '1' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -43,7 +52,7 @@ describe('KoreanTourInfoService', () => {
     it('keyword 파라미터를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.searchKeyword2({ keyword: '경복궁' });
+      await service.searchKeyword2({ keyword: '경복궁' }, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -61,11 +70,14 @@ describe('KoreanTourInfoService', () => {
     it('mapX, mapY, radius 파라미터를 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.locationBasedList2({
-        mapX: 126.977,
-        mapY: 37.579,
-        radius: 1000,
-      });
+      await service.locationBasedList2(
+        {
+          mapX: 126.977,
+          mapY: 37.579,
+          radius: 1000,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -86,7 +98,7 @@ describe('KoreanTourInfoService', () => {
         mockListResponse([{ contentid: '126508', title: '경복궁' }]),
       );
 
-      await service.detailCommon2({ contentId: '126508' });
+      await service.detailCommon2({ contentId: '126508' }, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -104,7 +116,10 @@ describe('KoreanTourInfoService', () => {
     it('eventStartDate 파라미터를 필수로 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.searchFestival2({ eventStartDate: '20260101' });
+      await service.searchFestival2(
+        { eventStartDate: '20260101' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -122,7 +137,7 @@ describe('KoreanTourInfoService', () => {
       const mockItems = [{ code: '1', name: '서울' }];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.areaCode2({});
+      const result = await service.areaCode2({}, testCredentials);
 
       expect(result.items).toHaveLength(1);
       expect(mockRequest).toHaveBeenCalledWith(
@@ -133,21 +148,35 @@ describe('KoreanTourInfoService', () => {
 
   describe('나머지 오퍼레이션', () => {
     const operations: [string, () => Promise<unknown>][] = [
-      ['areaBasedSyncList2', () => service.areaBasedSyncList2({})],
-      ['categoryCode2', () => service.categoryCode2({})],
-      ['detailImage2', () => service.detailImage2({ contentId: '1' })],
+      [
+        'areaBasedSyncList2',
+        () => service.areaBasedSyncList2({}, testCredentials),
+      ],
+      ['categoryCode2', () => service.categoryCode2({}, testCredentials)],
+      [
+        'detailImage2',
+        () => service.detailImage2({ contentId: '1' }, testCredentials),
+      ],
       [
         'detailInfo2',
-        () => service.detailInfo2({ contentId: '1', contentTypeId: '12' }),
+        () =>
+          service.detailInfo2(
+            { contentId: '1', contentTypeId: '12' },
+            testCredentials,
+          ),
       ],
       [
         'detailIntro2',
-        () => service.detailIntro2({ contentId: '1', contentTypeId: '12' }),
+        () =>
+          service.detailIntro2(
+            { contentId: '1', contentTypeId: '12' },
+            testCredentials,
+          ),
       ],
-      ['detailPetTour2', () => service.detailPetTour2({})],
-      ['ldongCode2', () => service.ldongCode2({})],
-      ['lclsSystmCode2', () => service.lclsSystmCode2({})],
-      ['searchStay2', () => service.searchStay2({})],
+      ['detailPetTour2', () => service.detailPetTour2({}, testCredentials)],
+      ['ldongCode2', () => service.ldongCode2({}, testCredentials)],
+      ['lclsSystmCode2', () => service.lclsSystmCode2({}, testCredentials)],
+      ['searchStay2', () => service.searchStay2({}, testCredentials)],
     ];
 
     it.each(operations)(

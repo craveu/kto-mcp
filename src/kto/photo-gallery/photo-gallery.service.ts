@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoServiceName } from '../common/constants';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 import type { PhotoGalleryItem } from './types';
 import type {
   PgGalleryDetailListDto,
@@ -32,11 +33,13 @@ export class PhotoGalleryService {
    */
   async galleryList1(
     dto: PgGalleryListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<PhotoGalleryItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'galleryList1',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -49,11 +52,13 @@ export class PhotoGalleryService {
    */
   async galleryDetailList1(
     dto: PgGalleryDetailListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<PhotoGalleryItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'galleryDetailList1',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -66,11 +71,13 @@ export class PhotoGalleryService {
    */
   async gallerySearchList1(
     dto: PgGallerySearchListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<PhotoGalleryItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'gallerySearchList1',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -84,11 +91,13 @@ export class PhotoGalleryService {
    */
   async gallerySyncDetailList1(
     dto: PgGallerySyncDetailListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<PhotoGalleryItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'gallerySyncDetailList1',
       params: { ...dto },
+      credentials,
     });
   }
 }

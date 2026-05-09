@@ -3,6 +3,7 @@ import { DurunubiService } from './durunubi.service';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoListResponse } from '../common/types';
 import type { DurunubiCourseItem, DurunubiRouteItem } from './types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 
 describe('DurunubiService', () => {
   let service: DurunubiService;
@@ -17,6 +18,11 @@ describe('DurunubiService', () => {
     service = new DurunubiService(mockHttpClient);
   });
 
+  const testCredentials: KtoCredentials = {
+    serviceKey: 'TEST_KEY',
+    preencoded: false,
+  };
+
   const mockListResponse = <T>(items: T[]): KtoListResponse<T> => ({
     items,
     numOfRows: 10,
@@ -27,7 +33,7 @@ describe('DurunubiService', () => {
   it('모든 메서드가 service: Durunubi로 호출해야 한다', async () => {
     mockRequest.mockResolvedValue(mockListResponse([]));
 
-    await service.courseList({});
+    await service.courseList({}, testCredentials);
 
     expect(mockRequest).toHaveBeenCalledWith(
       expect.objectContaining({ service: 'Durunubi' }),
@@ -46,7 +52,10 @@ describe('DurunubiService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.courseList({ numOfRows: 1 });
+      const result = await service.courseList(
+        { numOfRows: 1 },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -65,7 +74,7 @@ describe('DurunubiService', () => {
     it('빈 파라미터로도 호출 가능해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.courseList({});
+      await service.courseList({}, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -87,7 +96,7 @@ describe('DurunubiService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.courseList({});
+      const result = await service.courseList({}, testCredentials);
       const item = result.items[0];
 
       expect(item.crsKorNm).toBe('남파랑길 10코스');
@@ -109,7 +118,7 @@ describe('DurunubiService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.routeList({});
+      const result = await service.routeList({}, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -135,7 +144,7 @@ describe('DurunubiService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.routeList({});
+      const result = await service.routeList({}, testCredentials);
       const item = result.items[0];
 
       expect(item.themedescs).toBe(htmlContent);
@@ -146,7 +155,7 @@ describe('DurunubiService', () => {
     it('빈 파라미터로도 호출 가능해야 한다 (totalCount=3 페이지네이션 무효)', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.routeList({});
+      await service.routeList({}, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({

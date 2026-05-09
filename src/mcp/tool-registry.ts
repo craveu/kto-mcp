@@ -3,8 +3,22 @@ import { validate } from 'class-validator';
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
+import type {
+  ServerRequest,
+  ServerNotification,
+} from '@modelcontextprotocol/sdk/types.js';
 import type { McpToolDefinition } from './types/mcp.types';
-import { KtoApiError, KtoValidationError } from '../kto/common/kto-error';
+import {
+  KtoApiError,
+  KtoServiceKeyMissingError,
+  KtoValidationError,
+} from '../kto/common/kto-error';
+import type {
+  SessionCredentialsStore,
+  KtoCredentials,
+} from './session-credentials.store';
+import { STDIO_SESSION_ID } from './session-credentials.store';
 
 interface JsonSchemaField {
   type?: string;
@@ -66,16 +80,17 @@ export interface ToolRegistry {
 /**
  * 복수의 도구 레지스트리를 순회하여 McpServer에 일괄 등록한다.
  * 각 도구 핸들러는 class-validator DTO 검증 → 서비스 메서드 호출 → 결과 직렬화 순서로 동작한다.
+ * SPEC-KTO-011: store를 통해 세션별 KTO 서비스 키를 조회한다.
  *
  * @example
  * registerAll(server, [
  *   { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanTourInfoService },
- *   { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeTourInfoService },
- * ]);
+ * ], store);
  */
 export function registerAll(
   server: McpServer,
   registries: ToolRegistry[],
+  store: SessionCredentialsStore,
 ): void {
   for (const { tools, service } of registries) {
     for (const tool of tools) {
@@ -90,11 +105,27 @@ export function registerAll(
           // class-validator로 한 번 더 강한 검증을 handleToolCall 내부에서 수행한다.
           inputSchema: inputShape,
         },
-        async (args: Record<string, unknown>): Promise<CallToolResult> => {
+        async (
+          args: Record<string, unknown>,
+          extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
+        ): Promise<CallToolResult> => {
+          // sessionId가 없으면 stdio fallback (STDIO_SESSION_ID)
+          const sessionId = extra?.sessionId ?? STDIO_SESSION_ID;
+          const credentials = store.get(sessionId);
+
+          if (!credentials) {
+            const err = new KtoServiceKeyMissingError(sessionId);
+            return buildErrorResult(err.message);
+          }
+
           return handleToolCall(
             tool,
-            service as Record<string, (dto: unknown) => Promise<unknown>>,
+            service as Record<
+              string,
+              (dto: unknown, creds: KtoCredentials) => Promise<unknown>
+            >,
             args,
+            credentials,
           );
         },
       );
@@ -108,8 +139,12 @@ export function registerAll(
  */
 async function handleToolCall(
   tool: McpToolDefinition,
-  service: Record<string, (dto: unknown) => Promise<unknown>>,
+  service: Record<
+    string,
+    (dto: unknown, creds: KtoCredentials) => Promise<unknown>
+  >,
   args: Record<string, unknown>,
+  credentials: KtoCredentials,
 ): Promise<CallToolResult> {
   // DTO 검증
   const dto = plainToInstance(tool.dtoClass, args);
@@ -134,7 +169,7 @@ async function handleToolCall(
   // 서비스 메서드 호출
   try {
     const serviceMethod = service[tool.methodName];
-    const result: unknown = await serviceMethod.call(service, dto);
+    const result: unknown = await serviceMethod.call(service, dto, credentials);
     return {
       content: [
         {

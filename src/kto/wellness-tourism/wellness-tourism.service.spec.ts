@@ -3,6 +3,7 @@ import { WellnessTourismService } from './wellness-tourism.service';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoListResponse } from '../common/types';
 import type { WellnessTursmItem } from './types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 
 describe('WellnessTourismService', () => {
   let service: WellnessTourismService;
@@ -17,6 +18,11 @@ describe('WellnessTourismService', () => {
     service = new WellnessTourismService(mockHttpClient);
   });
 
+  const testCredentials: KtoCredentials = {
+    serviceKey: 'TEST_KEY',
+    preencoded: false,
+  };
+
   const mockListResponse = <T>(items: T[]): KtoListResponse<T> => ({
     items,
     numOfRows: 10,
@@ -27,7 +33,7 @@ describe('WellnessTourismService', () => {
   it('모든 메서드가 service: WellnessTursmService로 호출해야 한다 (SPEC-KTO-009 REQ-OPT-001)', async () => {
     mockRequest.mockResolvedValue(mockListResponse([]));
 
-    await service.areaBasedList({ langDivCd: 'KOR' });
+    await service.areaBasedList({ langDivCd: 'KOR' }, testCredentials);
 
     expect(mockRequest).toHaveBeenCalledWith(
       expect.objectContaining({ service: 'WellnessTursmService' }),
@@ -46,10 +52,13 @@ describe('WellnessTourismService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.areaBasedList({
-        langDivCd: 'KOR',
-        numOfRows: 1,
-      });
+      const result = await service.areaBasedList(
+        {
+          langDivCd: 'KOR',
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -68,7 +77,7 @@ describe('WellnessTourismService', () => {
     it('langDivCd 파라미터가 KTO에 그대로 전달되어야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.areaBasedList({ langDivCd: 'ENG' });
+      await service.areaBasedList({ langDivCd: 'ENG' }, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -93,7 +102,10 @@ describe('WellnessTourismService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.areaBasedList({ langDivCd: 'KOR' });
+      const result = await service.areaBasedList(
+        { langDivCd: 'KOR' },
+        testCredentials,
+      );
       const item = result.items[0];
 
       expect(item.contentId).toBe('2994116');
@@ -117,13 +129,16 @@ describe('WellnessTourismService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.locationBasedList({
-        langDivCd: 'KOR',
-        mapX: 126.6904,
-        mapY: 36.0748,
-        radius: 5000,
-        numOfRows: 1,
-      });
+      const result = await service.locationBasedList(
+        {
+          langDivCd: 'KOR',
+          mapX: 126.6904,
+          mapY: 36.0748,
+          radius: 5000,
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -152,11 +167,14 @@ describe('WellnessTourismService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.searchKeyword({
-        langDivCd: 'KOR',
-        keyword: '온천',
-        numOfRows: 1,
-      });
+      const result = await service.searchKeyword(
+        {
+          langDivCd: 'KOR',
+          keyword: '온천',
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -184,10 +202,13 @@ describe('WellnessTourismService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.wellnessTursmSyncList({
-        langDivCd: 'KOR',
-        numOfRows: 1,
-      });
+      const result = await service.wellnessTursmSyncList(
+        {
+          langDivCd: 'KOR',
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -207,7 +228,10 @@ describe('WellnessTourismService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.wellnessTursmSyncList({ langDivCd: 'KOR' });
+      const result = await service.wellnessTursmSyncList(
+        { langDivCd: 'KOR' },
+        testCredentials,
+      );
       expect(result.items[0].showflag).toBe('1');
       expect(result.items[0].oldContentId).toBe('2994000');
     });
@@ -219,7 +243,10 @@ describe('WellnessTourismService', () => {
         mockListResponse([{ contentId: '2994116' }]),
       );
 
-      await service.detailCommon({ langDivCd: 'KOR', contentId: '2994116' });
+      await service.detailCommon(
+        { langDivCd: 'KOR', contentId: '2994116' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -240,11 +267,14 @@ describe('WellnessTourismService', () => {
         mockListResponse([{ contentId: '2994116' }]),
       );
 
-      await service.detailIntro({
-        langDivCd: 'KOR',
-        contentId: '2994116',
-        contentTypeId: '25',
-      });
+      await service.detailIntro(
+        {
+          langDivCd: 'KOR',
+          contentId: '2994116',
+          contentTypeId: '25',
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -266,11 +296,14 @@ describe('WellnessTourismService', () => {
         mockListResponse([{ contentId: '2994116' }]),
       );
 
-      await service.detailInfo({
-        langDivCd: 'KOR',
-        contentId: '2994116',
-        contentTypeId: '25',
-      });
+      await service.detailInfo(
+        {
+          langDivCd: 'KOR',
+          contentId: '2994116',
+          contentTypeId: '25',
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -298,10 +331,13 @@ describe('WellnessTourismService', () => {
       );
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.detailImage({
-        langDivCd: 'KOR',
-        contentId: '2994116',
-      });
+      const result = await service.detailImage(
+        {
+          langDivCd: 'KOR',
+          contentId: '2994116',
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -327,10 +363,13 @@ describe('WellnessTourismService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.detailImage({
-        langDivCd: 'KOR',
-        contentId: '2994116',
-      });
+      const result = await service.detailImage(
+        {
+          langDivCd: 'KOR',
+          contentId: '2994116',
+        },
+        testCredentials,
+      );
       expect(result.items[0].imgname).toBe('wellness_spa.jpg');
       expect(result.items[0].serialnum).toBe('3');
     });

@@ -3,6 +3,7 @@ import { PhotoGalleryService } from './photo-gallery.service';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoListResponse } from '../common/types';
 import type { PhotoGalleryItem } from './types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 
 describe('PhotoGalleryService', () => {
   let service: PhotoGalleryService;
@@ -17,6 +18,11 @@ describe('PhotoGalleryService', () => {
     service = new PhotoGalleryService(mockHttpClient);
   });
 
+  const testCredentials: KtoCredentials = {
+    serviceKey: 'TEST_KEY',
+    preencoded: false,
+  };
+
   const mockListResponse = <T>(items: T[]): KtoListResponse<T> => ({
     items,
     numOfRows: 10,
@@ -27,7 +33,7 @@ describe('PhotoGalleryService', () => {
   it('모든 메서드가 service: PhotoGalleryService1로 호출해야 한다', async () => {
     mockRequest.mockResolvedValue(mockListResponse([]));
 
-    await service.galleryList1({});
+    await service.galleryList1({}, testCredentials);
 
     expect(mockRequest).toHaveBeenCalledWith(
       expect.objectContaining({ service: 'PhotoGalleryService1' }),
@@ -47,9 +53,12 @@ describe('PhotoGalleryService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.galleryList1({
-        numOfRows: 5,
-      });
+      const result = await service.galleryList1(
+        {
+          numOfRows: 5,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -70,7 +79,7 @@ describe('PhotoGalleryService', () => {
     it('빈 파라미터로도 호출 가능해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.galleryList1({});
+      await service.galleryList1({}, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -95,7 +104,7 @@ describe('PhotoGalleryService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.galleryList1({});
+      const result = await service.galleryList1({}, testCredentials);
       const item = result.items[0];
 
       expect(item.galContentId).toBe('gal-123');
@@ -119,9 +128,12 @@ describe('PhotoGalleryService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.galleryDetailList1({
-        title: '한라산',
-      });
+      const result = await service.galleryDetailList1(
+        {
+          title: '한라산',
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -138,7 +150,7 @@ describe('PhotoGalleryService', () => {
     it('PhotoGalleryService1 고유 오퍼레이션으로 호출해야 한다 (REQ-EVT-001)', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.galleryDetailList1({ title: '경복궁' });
+      await service.galleryDetailList1({ title: '경복궁' }, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -160,7 +172,10 @@ describe('PhotoGalleryService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.gallerySearchList1({ keyword: '경복궁' });
+      const result = await service.gallerySearchList1(
+        { keyword: '경복궁' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -178,11 +193,14 @@ describe('PhotoGalleryService', () => {
     it('페이지네이션 파라미터를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.gallerySearchList1({
-        keyword: '서울',
-        numOfRows: 20,
-        pageNo: 2,
-      });
+      await service.gallerySearchList1(
+        {
+          keyword: '서울',
+          numOfRows: 20,
+          pageNo: 2,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -202,7 +220,7 @@ describe('PhotoGalleryService', () => {
     it('동기화 파라미터 없이도 호출 가능해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.gallerySyncDetailList1({});
+      await service.gallerySyncDetailList1({}, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -215,10 +233,13 @@ describe('PhotoGalleryService', () => {
     it('syncModTime 및 showflag를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.gallerySyncDetailList1({
-        syncModTime: '20240101000000',
-        showflag: '1',
-      });
+      await service.gallerySyncDetailList1(
+        {
+          syncModTime: '20240101000000',
+          showflag: '1',
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -235,10 +256,13 @@ describe('PhotoGalleryService', () => {
     it('페이지네이션 파라미터를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.gallerySyncDetailList1({
-        numOfRows: 100,
-        pageNo: 1,
-      });
+      await service.gallerySyncDetailList1(
+        {
+          numOfRows: 100,
+          pageNo: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({

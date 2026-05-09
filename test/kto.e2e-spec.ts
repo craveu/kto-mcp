@@ -48,6 +48,15 @@ import { WellnessTourismService } from '../src/kto/wellness-tourism/wellness-tou
 import { WELLNESS_TOURISM_TOOLS } from '../src/kto/wellness-tourism/wellness-tourism.tools';
 import { PhotoAwardService } from '../src/kto/photo-award/photo-award.service';
 import { PHOTO_AWARD_TOOLS } from '../src/kto/photo-award/photo-award.tools';
+import {
+  SessionCredentialsStore,
+  STDIO_SESSION_ID,
+} from '../src/mcp/session-credentials.store';
+
+/** e2e 테스트용 공유 SessionCredentialsStore (stateless 모드에서도 타입 요건 충족) */
+const e2eStore = new SessionCredentialsStore();
+// 직접 핸들러 호출 테스트(extra 없음)는 STDIO_SESSION_ID fallback을 사용하므로 더미 자격증명 등록
+e2eStore.register(STDIO_SESSION_ID, { serviceKey: 'e2e-test-key', preencoded: false });
 
 /** HTTP POST 요청 헬퍼 */
 function httpPost(
@@ -109,7 +118,7 @@ async function createTestHttpServer(
   if (photoService) {
     registries.push({ tools: PHOTO_GALLERY_TOOLS, service: photoService });
   }
-  registerAll(mcpServer, registries);
+  registerAll(mcpServer, registries, e2eStore);
 
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
@@ -187,18 +196,22 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer, [
-        { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
-        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
-        { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
-        { tools: GO_CAMPING_TOOLS, service: goCampingService },
-        { tools: ODII_TOOLS, service: audioGuideService },
-        { tools: DURUNUBI_TOOLS, service: durunubiService },
-        { tools: PET_TOUR_TOOLS, service: petTourService },
-        { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
-        { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
-        { tools: PHOTO_AWARD_TOOLS, service: photoAwardService },
-      ]);
+      registerAll(
+        mcpServer,
+        [
+          { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
+          { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+          { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+          { tools: GO_CAMPING_TOOLS, service: goCampingService },
+          { tools: ODII_TOOLS, service: audioGuideService },
+          { tools: DURUNUBI_TOOLS, service: durunubiService },
+          { tools: PET_TOUR_TOOLS, service: petTourService },
+          { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
+          { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
+          { tools: PHOTO_AWARD_TOOLS, service: photoAwardService },
+        ],
+        e2eStore,
+      );
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
@@ -211,15 +224,19 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-durunubi-count-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer, [
-        { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
-        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
-        { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
-        { tools: GO_CAMPING_TOOLS, service: goCampingService },
-        { tools: ODII_TOOLS, service: audioGuideService },
-        { tools: DURUNUBI_TOOLS, service: durunubiService },
-        { tools: PET_TOUR_TOOLS, service: petTourService },
-      ]);
+      registerAll(
+        mcpServer,
+        [
+          { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
+          { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+          { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+          { tools: GO_CAMPING_TOOLS, service: goCampingService },
+          { tools: ODII_TOOLS, service: audioGuideService },
+          { tools: DURUNUBI_TOOLS, service: durunubiService },
+          { tools: PET_TOUR_TOOLS, service: petTourService },
+        ],
+        e2eStore,
+      );
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
@@ -239,9 +256,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-durunubi-dto-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer4, [
-        { tools: DURUNUBI_TOOLS, service: mockDurunubiService },
-      ]);
+      registerAll(
+        mcpServer4,
+        [{ tools: DURUNUBI_TOOLS, service: mockDurunubiService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServer4 as unknown as {
         _registeredTools: Record<
@@ -269,18 +288,22 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-test-2',
         version: '0.1.0',
       });
-      registerAll(mcpServer, [
-        { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
-        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
-        { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
-        { tools: GO_CAMPING_TOOLS, service: goCampingService },
-        { tools: ODII_TOOLS, service: audioGuideService },
-        { tools: DURUNUBI_TOOLS, service: durunubiService },
-        { tools: PET_TOUR_TOOLS, service: petTourService },
-        { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
-        { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
-        { tools: PHOTO_AWARD_TOOLS, service: photoAwardService },
-      ]);
+      registerAll(
+        mcpServer,
+        [
+          { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
+          { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+          { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+          { tools: GO_CAMPING_TOOLS, service: goCampingService },
+          { tools: ODII_TOOLS, service: audioGuideService },
+          { tools: DURUNUBI_TOOLS, service: durunubiService },
+          { tools: PET_TOUR_TOOLS, service: petTourService },
+          { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
+          { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
+          { tools: PHOTO_AWARD_TOOLS, service: photoAwardService },
+        ],
+        e2eStore,
+      );
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
@@ -367,15 +390,19 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-audio-count-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer, [
-        { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
-        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
-        { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
-        { tools: GO_CAMPING_TOOLS, service: goCampingService },
-        { tools: ODII_TOOLS, service: audioGuideService },
-        { tools: DURUNUBI_TOOLS, service: durunubiService },
-        { tools: PET_TOUR_TOOLS, service: petTourService },
-      ]);
+      registerAll(
+        mcpServer,
+        [
+          { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
+          { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+          { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+          { tools: GO_CAMPING_TOOLS, service: goCampingService },
+          { tools: ODII_TOOLS, service: audioGuideService },
+          { tools: DURUNUBI_TOOLS, service: durunubiService },
+          { tools: PET_TOUR_TOOLS, service: petTourService },
+        ],
+        e2eStore,
+      );
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
@@ -391,15 +418,19 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-pet-count-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer, [
-        { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
-        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
-        { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
-        { tools: GO_CAMPING_TOOLS, service: goCampingService },
-        { tools: ODII_TOOLS, service: audioGuideService },
-        { tools: DURUNUBI_TOOLS, service: durunubiService },
-        { tools: PET_TOUR_TOOLS, service: petTourService },
-      ]);
+      registerAll(
+        mcpServer,
+        [
+          { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
+          { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+          { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+          { tools: GO_CAMPING_TOOLS, service: goCampingService },
+          { tools: ODII_TOOLS, service: audioGuideService },
+          { tools: DURUNUBI_TOOLS, service: durunubiService },
+          { tools: PET_TOUR_TOOLS, service: petTourService },
+        ],
+        e2eStore,
+      );
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
@@ -415,9 +446,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-medical-count-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer, [
-        { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
-      ]);
+      registerAll(
+        mcpServer,
+        [{ tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService }],
+        e2eStore,
+      );
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
@@ -433,9 +466,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-wellness-count-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer, [
-        { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
-      ]);
+      registerAll(
+        mcpServer,
+        [{ tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService }],
+        e2eStore,
+      );
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
@@ -451,9 +486,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-wellness-ldong-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer, [
-        { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
-      ]);
+      registerAll(
+        mcpServer,
+        [{ tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService }],
+        e2eStore,
+      );
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
@@ -474,9 +511,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-wellness-area-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerW1, [
-        { tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService },
-      ]);
+      registerAll(
+        mcpServerW1,
+        [{ tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerW1 as unknown as {
         _registeredTools: Record<
@@ -507,9 +546,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-wellness-detail-intro-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerW2, [
-        { tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService },
-      ]);
+      registerAll(
+        mcpServerW2,
+        [{ tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerW2 as unknown as {
         _registeredTools: Record<
@@ -544,9 +585,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-wellness-detail-info-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerW3, [
-        { tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService },
-      ]);
+      registerAll(
+        mcpServerW3,
+        [{ tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerW3 as unknown as {
         _registeredTools: Record<
@@ -582,9 +625,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-wellness-location-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerW4, [
-        { tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService },
-      ]);
+      registerAll(
+        mcpServerW4,
+        [{ tools: WELLNESS_TOURISM_TOOLS, service: mockWellnessService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerW4 as unknown as {
         _registeredTools: Record<
@@ -617,9 +662,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-medical-area-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerMed1, [
-        { tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService },
-      ]);
+      registerAll(
+        mcpServerMed1,
+        [{ tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerMed1 as unknown as {
         _registeredTools: Record<
@@ -652,9 +699,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-medical-location-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerMed2, [
-        { tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService },
-      ]);
+      registerAll(
+        mcpServerMed2,
+        [{ tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerMed2 as unknown as {
         _registeredTools: Record<
@@ -687,9 +736,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-medical-search-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerMed3, [
-        { tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService },
-      ]);
+      registerAll(
+        mcpServerMed3,
+        [{ tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerMed3 as unknown as {
         _registeredTools: Record<
@@ -722,9 +773,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-medical-detail-mdcl-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerMed4, [
-        { tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService },
-      ]);
+      registerAll(
+        mcpServerMed4,
+        [{ tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerMed4 as unknown as {
         _registeredTools: Record<
@@ -755,9 +808,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-medical-detail-common-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerMed5, [
-        { tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService },
-      ]);
+      registerAll(
+        mcpServerMed5,
+        [{ tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerMed5 as unknown as {
         _registeredTools: Record<
@@ -788,9 +843,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-medical-detail-intro-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerMed6, [
-        { tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService },
-      ]);
+      registerAll(
+        mcpServerMed6,
+        [{ tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerMed6 as unknown as {
         _registeredTools: Record<
@@ -823,9 +880,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-medical-area-rows-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerMed7, [
-        { tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService },
-      ]);
+      registerAll(
+        mcpServerMed7,
+        [{ tools: MEDICAL_TOURISM_TOOLS, service: mockMedicalService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerMed7 as unknown as {
         _registeredTools: Record<
@@ -861,9 +920,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-pet-location-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerPet1, [
-        { tools: PET_TOUR_TOOLS, service: mockPetService },
-      ]);
+      registerAll(
+        mcpServerPet1,
+        [{ tools: PET_TOUR_TOOLS, service: mockPetService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerPet1 as unknown as {
         _registeredTools: Record<
@@ -896,9 +957,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-pet-search-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerPet2, [
-        { tools: PET_TOUR_TOOLS, service: mockPetService },
-      ]);
+      registerAll(
+        mcpServerPet2,
+        [{ tools: PET_TOUR_TOOLS, service: mockPetService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerPet2 as unknown as {
         _registeredTools: Record<
@@ -931,9 +994,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-pet-area-test',
         version: '0.1.0',
       });
-      registerAll(mcpServerPet3, [
-        { tools: PET_TOUR_TOOLS, service: mockPetService },
-      ]);
+      registerAll(
+        mcpServerPet3,
+        [{ tools: PET_TOUR_TOOLS, service: mockPetService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServerPet3 as unknown as {
         _registeredTools: Record<
@@ -966,9 +1031,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-audio-dto-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer2, [
-        { tools: ODII_TOOLS, service: mockAudioService },
-      ]);
+      registerAll(
+        mcpServer2,
+        [{ tools: ODII_TOOLS, service: mockAudioService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServer2 as unknown as {
         _registeredTools: Record<
@@ -1002,9 +1069,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-audio-theme-search-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer3, [
-        { tools: ODII_TOOLS, service: mockAudioService },
-      ]);
+      registerAll(
+        mcpServer3,
+        [{ tools: ODII_TOOLS, service: mockAudioService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServer3 as unknown as {
         _registeredTools: Record<
@@ -1038,9 +1107,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-photo-dto-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer2, [
-        { tools: PHOTO_GALLERY_TOOLS, service: mockPhotoService },
-      ]);
+      registerAll(
+        mcpServer2,
+        [{ tools: PHOTO_GALLERY_TOOLS, service: mockPhotoService }],
+        e2eStore,
+      );
 
       const internalServer = mcpServer2 as unknown as {
         _registeredTools: Record<
@@ -1110,9 +1181,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-dto-inprocess',
         version: '0.1.0',
       });
-      registerAll(mcpServer2, [
-        { tools: KOREAN_TOUR_INFO_TOOLS, service: mockService2 },
-      ]);
+      registerAll(
+        mcpServer2,
+        [{ tools: KOREAN_TOUR_INFO_TOOLS, service: mockService2 }],
+        e2eStore,
+      );
 
       // _registeredTools에서 detailCommon2 핸들러를 직접 호출
       const internalServer = mcpServer2 as unknown as {
@@ -1149,9 +1222,11 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-dto-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer, [
-        { tools: KOREAN_TOUR_INFO_TOOLS, service: mockService },
-      ]);
+      registerAll(
+        mcpServer,
+        [{ tools: KOREAN_TOUR_INFO_TOOLS, service: mockService }],
+        e2eStore,
+      );
 
       const transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: undefined,

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoServiceName } from '../common/constants';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 import type { DurunubiCourseItem, DurunubiRouteItem } from './types';
 import type { DuCourseListDto, DuRouteListDto } from './dto';
 
@@ -27,11 +28,13 @@ export class DurunubiService {
    */
   async courseList(
     dto: DuCourseListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<DurunubiCourseItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'courseList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -44,11 +47,13 @@ export class DurunubiService {
    */
   async routeList(
     dto: DuRouteListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<DurunubiRouteItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'routeList',
       params: { ...dto },
+      credentials,
     });
   }
 }

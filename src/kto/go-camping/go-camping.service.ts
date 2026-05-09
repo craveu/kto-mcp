@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoServiceName } from '../common/constants';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 import type { GoCampingItem, GoCampingImageItem } from './types';
 import type {
   GcBasedListDto,
@@ -31,11 +32,13 @@ export class GoCampingService {
    */
   async basedList(
     dto: GcBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<GoCampingItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'basedList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -48,11 +51,13 @@ export class GoCampingService {
    */
   async basedSyncList(
     dto: GcBasedSyncListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<GoCampingItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'basedSyncList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -65,11 +70,13 @@ export class GoCampingService {
    */
   async locationBasedList(
     dto: GcLocationBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<GoCampingItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'locationBasedList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -82,11 +89,13 @@ export class GoCampingService {
    */
   async searchList(
     dto: GcSearchListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<GoCampingItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'searchList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -100,11 +109,13 @@ export class GoCampingService {
    */
   async imageList(
     dto: GcImageListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<GoCampingImageItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'imageList',
       params: { ...dto },
+      credentials,
     });
   }
 }

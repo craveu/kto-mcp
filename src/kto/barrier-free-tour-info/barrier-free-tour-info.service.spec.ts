@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { BarrierFreeTourInfoService } from './barrier-free-tour-info.service';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 
 describe('BarrierFreeTourInfoService', () => {
   let service: BarrierFreeTourInfoService;
@@ -16,6 +17,11 @@ describe('BarrierFreeTourInfoService', () => {
     service = new BarrierFreeTourInfoService(mockHttpClient);
   });
 
+  const testCredentials: KtoCredentials = {
+    serviceKey: 'TEST_KEY',
+    preencoded: false,
+  };
+
   const mockListResponse = <T>(items: T[]): KtoListResponse<T> => ({
     items,
     numOfRows: 10,
@@ -26,7 +32,7 @@ describe('BarrierFreeTourInfoService', () => {
   it('모든 메서드가 service: KorWithService2로 호출해야 한다', async () => {
     mockRequest.mockResolvedValue(mockListResponse([]));
 
-    await service.areaBasedList2({});
+    await service.areaBasedList2({}, testCredentials);
 
     expect(mockRequest).toHaveBeenCalledWith(
       expect.objectContaining({ service: 'KorWithService2' }),
@@ -38,7 +44,10 @@ describe('BarrierFreeTourInfoService', () => {
       const mockItems = [{ contentid: '126508', title: '무장애 관광지' }];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.areaBasedList2({ areaCode: '1' });
+      const result = await service.areaBasedList2(
+        { areaCode: '1' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -58,11 +67,14 @@ describe('BarrierFreeTourInfoService', () => {
     it('mapX, mapY, radius를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.locationBasedList2({
-        mapX: 126.977,
-        mapY: 37.579,
-        radius: 1000,
-      });
+      await service.locationBasedList2(
+        {
+          mapX: 126.977,
+          mapY: 37.579,
+          radius: 1000,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -82,7 +94,10 @@ describe('BarrierFreeTourInfoService', () => {
     it('keyword를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.searchKeyword2({ keyword: '무장애 관광지' });
+      await service.searchKeyword2(
+        { keyword: '무장애 관광지' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -100,7 +115,10 @@ describe('BarrierFreeTourInfoService', () => {
     it('eventStartDate를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.searchFestival2({ eventStartDate: '20240101' });
+      await service.searchFestival2(
+        { eventStartDate: '20240101' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -118,7 +136,7 @@ describe('BarrierFreeTourInfoService', () => {
     it('빈 파라미터로도 호출 가능해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.searchStay2({});
+      await service.searchStay2({}, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -133,7 +151,7 @@ describe('BarrierFreeTourInfoService', () => {
     it('contentId를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.detailCommon2({ contentId: '126508' });
+      await service.detailCommon2({ contentId: '126508' }, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -152,7 +170,10 @@ describe('BarrierFreeTourInfoService', () => {
     it('contentId와 contentTypeId를 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.detailIntro2({ contentId: '126508', contentTypeId: '12' });
+      await service.detailIntro2(
+        { contentId: '126508', contentTypeId: '12' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -171,7 +192,10 @@ describe('BarrierFreeTourInfoService', () => {
     it('contentId와 contentTypeId를 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.detailInfo2({ contentId: '126508', contentTypeId: '12' });
+      await service.detailInfo2(
+        { contentId: '126508', contentTypeId: '12' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -186,7 +210,7 @@ describe('BarrierFreeTourInfoService', () => {
     it('contentId를 올바르게 전달해야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.detailImage2({ contentId: '126508' });
+      await service.detailImage2({ contentId: '126508' }, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -216,7 +240,10 @@ describe('BarrierFreeTourInfoService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.detailWithTour2({ contentId: '126508' });
+      const result = await service.detailWithTour2(
+        { contentId: '126508' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({

@@ -3,6 +3,7 @@ import { MedicalTourismService } from './medical-tourism.service';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoListResponse } from '../common/types';
 import type { MdclTursmItem } from './types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 
 describe('MedicalTourismService', () => {
   let service: MedicalTourismService;
@@ -17,6 +18,11 @@ describe('MedicalTourismService', () => {
     service = new MedicalTourismService(mockHttpClient);
   });
 
+  const testCredentials: KtoCredentials = {
+    serviceKey: 'TEST_KEY',
+    preencoded: false,
+  };
+
   const mockListResponse = <T>(items: T[]): KtoListResponse<T> => ({
     items,
     numOfRows: 10,
@@ -27,7 +33,7 @@ describe('MedicalTourismService', () => {
   it('모든 메서드가 service: MdclTursmService로 호출해야 한다 (SPEC-KTO-008 REQ-OPT-001)', async () => {
     mockRequest.mockResolvedValue(mockListResponse([]));
 
-    await service.areaBasedList({ langDivCd: 'KOR' });
+    await service.areaBasedList({ langDivCd: 'KOR' }, testCredentials);
 
     expect(mockRequest).toHaveBeenCalledWith(
       expect.objectContaining({ service: 'MdclTursmService' }),
@@ -46,10 +52,13 @@ describe('MedicalTourismService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.areaBasedList({
-        langDivCd: 'KOR',
-        numOfRows: 1,
-      });
+      const result = await service.areaBasedList(
+        {
+          langDivCd: 'KOR',
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -68,7 +77,7 @@ describe('MedicalTourismService', () => {
     it('langDivCd 파라미터가 KTO에 그대로 전달되어야 한다', async () => {
       mockRequest.mockResolvedValueOnce(mockListResponse([]));
 
-      await service.areaBasedList({ langDivCd: 'ENG' });
+      await service.areaBasedList({ langDivCd: 'ENG' }, testCredentials);
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -93,7 +102,10 @@ describe('MedicalTourismService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.areaBasedList({ langDivCd: 'KOR' });
+      const result = await service.areaBasedList(
+        { langDivCd: 'KOR' },
+        testCredentials,
+      );
       const item = result.items[0];
 
       expect(item.contentId).toBe('3010001');
@@ -116,13 +128,16 @@ describe('MedicalTourismService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.locationBasedList({
-        langDivCd: 'KOR',
-        mapX: 127.0495,
-        mapY: 37.5172,
-        radius: 5000,
-        numOfRows: 1,
-      });
+      const result = await service.locationBasedList(
+        {
+          langDivCd: 'KOR',
+          mapX: 127.0495,
+          mapY: 37.5172,
+          radius: 5000,
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -150,11 +165,14 @@ describe('MedicalTourismService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.searchKeyword({
-        langDivCd: 'ENG',
-        keyword: 'Rhinoplasty',
-        numOfRows: 1,
-      });
+      const result = await service.searchKeyword(
+        {
+          langDivCd: 'ENG',
+          keyword: 'Rhinoplasty',
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -182,10 +200,13 @@ describe('MedicalTourismService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.mdclTursmSyncList({
-        langDivCd: 'KOR',
-        numOfRows: 1,
-      });
+      const result = await service.mdclTursmSyncList(
+        {
+          langDivCd: 'KOR',
+          numOfRows: 1,
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -205,7 +226,10 @@ describe('MedicalTourismService', () => {
       };
       mockRequest.mockResolvedValueOnce(mockListResponse([mockItem]));
 
-      const result = await service.mdclTursmSyncList({ langDivCd: 'KOR' });
+      const result = await service.mdclTursmSyncList(
+        { langDivCd: 'KOR' },
+        testCredentials,
+      );
       expect(result.items[0].showflag).toBe('1');
     });
   });
@@ -220,10 +244,13 @@ describe('MedicalTourismService', () => {
       ];
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
-      const result = await service.detailMdclTursm({
-        langDivCd: 'KOR',
-        contentId: '3010001',
-      });
+      const result = await service.detailMdclTursm(
+        {
+          langDivCd: 'KOR',
+          contentId: '3010001',
+        },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -245,7 +272,10 @@ describe('MedicalTourismService', () => {
         mockListResponse([{ contentId: '3010001' }]),
       );
 
-      await service.detailCommon({ langDivCd: 'KOR', contentId: '3010001' });
+      await service.detailCommon(
+        { langDivCd: 'KOR', contentId: '3010001' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -266,7 +296,10 @@ describe('MedicalTourismService', () => {
         mockListResponse([{ contentId: '3010001' }]),
       );
 
-      await service.detailIntro({ langDivCd: 'KOR', contentId: '3010001' });
+      await service.detailIntro(
+        { langDivCd: 'KOR', contentId: '3010001' },
+        testCredentials,
+      );
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({

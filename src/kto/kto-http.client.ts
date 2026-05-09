@@ -8,12 +8,13 @@ import {
   RETRY_CONFIG,
 } from './common/constants';
 import { KtoApiError } from './common/kto-error';
+import type { KtoCredentials } from '../mcp/session-credentials.store';
 import { normalizeItems } from './common/response-normalizer';
 import type { KtoListResponse, KtoRawResponse } from './common/types';
 
 // @MX:ANCHOR: [AUTO] 모든 도구 핸들러가 이 메서드를 호출한다. 예상 fan_in >= 15.
-// @MX:REASON: KTO API 호출의 단일 진입점. 서비스 키 주입, 재시도, 응답 정규화를 담당.
-// @MX:SPEC: SPEC-KTO-001 REQ-KTO-003, REQ-STATE-001, REQ-UNW-002
+// @MX:REASON: KTO API 호출의 단일 진입점. credentials 파라미터로 stateless 전환하여 멀티 테넌트 지원.
+// @MX:SPEC: SPEC-KTO-001 REQ-KTO-003, REQ-STATE-001, REQ-UNW-002, SPEC-KTO-011 REQ-KTO11-001
 
 /** KTO API 요청 옵션 */
 export interface KtoRequestOptions {
@@ -23,6 +24,8 @@ export interface KtoRequestOptions {
   operation: string;
   /** 추가 쿼리 파라미터 */
   params?: Record<string, unknown>;
+  /** KTO 서비스 키 자격증명. 매 호출마다 전달 (stateless). */
+  credentials: KtoCredentials;
 }
 
 const xmlParser = new XMLParser({ ignoreAttributes: false });
@@ -110,13 +113,12 @@ function isRetryableError(err: unknown): boolean {
  * - 5xx 재시도 (지수 백오프)
  * - 게이트웨이 XML 오류 파싱
  * - 응답 정규화
+ * - SPEC-KTO-011: credentials 파라미터로 stateless 전환 (멀티 테넌트 지원)
  */
 export class KtoHttpClient {
   private readonly axios: AxiosInstance;
 
   constructor(
-    private readonly serviceKey: string,
-    private readonly preencoded: boolean,
     /** 테스트에서 지연 시간을 줄이기 위한 override (기본값: RETRY_CONFIG.initialDelayMs) */
     private readonly initialDelayOverrideMs?: number,
   ) {
@@ -127,14 +129,17 @@ export class KtoHttpClient {
 
   /**
    * KTO API에 GET 요청을 보내고 정규화된 목록 응답을 반환한다.
+   * credentials는 매 호출마다 전달되어야 한다 (stateless, 멀티 테넌트).
    */
   async request<T>(opts: KtoRequestOptions): Promise<KtoListResponse<T>> {
-    const { service, operation, params = {} } = opts;
+    const { service, operation, params = {}, credentials } = opts;
     const baseUrl = BASE_URL_MAP[service];
     const url = `${baseUrl}/${operation}`;
 
-    // 서비스 키: preencoded=true이면 raw string으로 직접 결합 (이중 인코딩 방지)
-    const serviceKeyParam = this.preencoded ? this.serviceKey : this.serviceKey;
+    // 서비스 키: preencoded=true이면 이미 인코딩된 상태로 전달
+    const serviceKeyParam = credentials.preencoded
+      ? credentials.serviceKey
+      : credentials.serviceKey;
 
     const queryParams = {
       ...COMMON_PARAMS,

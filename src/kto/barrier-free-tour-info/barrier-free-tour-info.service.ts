@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoServiceName } from '../common/constants';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 import type {
   BfAreaBasedListDto,
   BfDetailCommonDto,
@@ -30,99 +31,117 @@ export class BarrierFreeTourInfoService {
   /** 지역기반 무장애 관광정보 목록 조회 */
   async areaBasedList2(
     dto: BfAreaBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<Record<string, unknown>>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'areaBasedList2',
       params: { ...dto },
+      credentials,
     });
   }
 
   /** 위치기반 무장애 정보 목록 조회 */
   async locationBasedList2(
     dto: BfLocationBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<Record<string, unknown>>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'locationBasedList2',
       params: { ...dto },
+      credentials,
     });
   }
 
   /** 키워드 무장애 관광정보 검색 */
   async searchKeyword2(
     dto: BfSearchKeywordDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<Record<string, unknown>>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'searchKeyword2',
       params: { ...dto },
+      credentials,
     });
   }
 
   /** 무장애 행사정보 검색 */
   async searchFestival2(
     dto: BfSearchFestivalDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<Record<string, unknown>>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'searchFestival2',
       params: { ...dto },
+      credentials,
     });
   }
 
   /** 무장애 숙박정보 검색 */
   async searchStay2(
     dto: BfSearchStayDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<Record<string, unknown>>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'searchStay2',
       params: { ...dto },
+      credentials,
     });
   }
 
   /** 공통정보 상세 조회 */
   async detailCommon2(
     dto: BfDetailCommonDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<Record<string, unknown>>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailCommon2',
       params: { ...dto },
+      credentials,
     });
   }
 
   /** 소개 정보 조회 */
   async detailIntro2(
     dto: BfDetailIntroDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<Record<string, unknown>>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailIntro2',
       params: { ...dto },
+      credentials,
     });
   }
 
   /** 반복 상세정보 조회 */
   async detailInfo2(
     dto: BfDetailInfoDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<Record<string, unknown>>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailInfo2',
       params: { ...dto },
+      credentials,
     });
   }
 
   /** 이미지 정보 조회 */
   async detailImage2(
     dto: BfDetailImageDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<Record<string, unknown>>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailImage2',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -136,11 +155,13 @@ export class BarrierFreeTourInfoService {
    */
   async detailWithTour2(
     dto: BfDetailWithTourDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<Record<string, unknown>>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailWithTour2',
       params: { ...dto },
+      credentials,
     });
   }
 }

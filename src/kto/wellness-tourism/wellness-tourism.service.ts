@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoServiceName } from '../common/constants';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 import type { WellnessTursmItem } from './types';
 import type {
   WtAreaBasedListDto,
@@ -34,11 +35,13 @@ export class WellnessTourismService {
    */
   async areaBasedList(
     dto: WtAreaBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<WellnessTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'areaBasedList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -48,11 +51,13 @@ export class WellnessTourismService {
    */
   async locationBasedList(
     dto: WtLocationBasedListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<WellnessTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'locationBasedList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -62,11 +67,13 @@ export class WellnessTourismService {
    */
   async searchKeyword(
     dto: WtSearchKeywordDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<WellnessTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'searchKeyword',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -76,11 +83,13 @@ export class WellnessTourismService {
    */
   async wellnessTursmSyncList(
     dto: WtWellnessTursmSyncListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<WellnessTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'wellnessTursmSyncList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -89,11 +98,13 @@ export class WellnessTourismService {
    */
   async detailCommon(
     dto: WtDetailCommonDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<WellnessTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailCommon',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -103,11 +114,13 @@ export class WellnessTourismService {
    */
   async detailIntro(
     dto: WtDetailIntroDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<WellnessTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailIntro',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -117,11 +130,13 @@ export class WellnessTourismService {
    */
   async detailInfo(
     dto: WtDetailInfoDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<WellnessTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailInfo',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -131,11 +146,13 @@ export class WellnessTourismService {
    */
   async detailImage(
     dto: WtDetailImageDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<WellnessTursmItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'detailImage',
       params: { ...dto },
+      credentials,
     });
   }
 }

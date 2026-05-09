@@ -3,6 +3,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { AppModule } from './app.module';
 import { getEnv } from './env';
 import { registerAll } from './mcp/tool-registry';
+import type { ToolRegistry } from './mcp/tool-registry';
 import { KoreanTourInfoService } from './kto/korean-tour-info/korean-tour-info.service';
 import { KOREAN_TOUR_INFO_TOOLS } from './kto/korean-tour-info/korean-tour-info.tools';
 import { BarrierFreeTourInfoService } from './kto/barrier-free-tour-info/barrier-free-tour-info.service';
@@ -26,9 +27,10 @@ import { PHOTO_AWARD_TOOLS } from './kto/photo-award/photo-award.tools';
 import { StdioTransportAdapter } from './mcp/transports/stdio.adapter';
 import { HttpStreamableTransportAdapter } from './mcp/transports/http-streamable.adapter';
 import { HttpTransportAdapter } from './mcp/transports/http.adapter';
+import { SessionCredentialsStore } from './mcp/session-credentials.store';
 
 async function bootstrap() {
-  // REQ-KTO-007: 환경변수 로드 — KTO_SERVICE_KEY 누락 시 즉시 throw (REQ-UNW-001)
+  // REQ-KTO-007: 환경변수 로드 — stdio 모드에서만 KTO_SERVICE_KEY 필수 (SPEC-KTO-011)
   const env = getEnv();
 
   // NestJS 애플리케이션 컨텍스트 생성 (HTTP 서버 미기동)
@@ -36,13 +38,10 @@ async function bootstrap() {
     logger: ['error', 'warn', 'log'],
   });
 
-  // MCP 서버 생성
-  const mcpServer = new McpServer({
-    name: 'kto-mcp',
-    version: '0.1.0',
-  });
+  // SessionCredentialsStore DI 인스턴스 획득
+  const store = app.get(SessionCredentialsStore);
 
-  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001, SPEC-KTO-003 REQ-KTO3-001, SPEC-KTO-004 REQ-KTO4-001, SPEC-KTO-005 REQ-KTO5-001, SPEC-KTO-006 REQ-KTO6-001, SPEC-KTO-007 REQ-KTO7-001, SPEC-KTO-008 REQ-KTO8-001, SPEC-KTO-009 REQ-KTO9-001, SPEC-KTO-010 REQ-KTO10-001)
+  // 도구 레지스트리 빌드 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 ~ SPEC-KTO-010, SPEC-KTO-011)
   const koreanTourInfoService = app.get(KoreanTourInfoService);
   const barrierFreeTourInfoService = app.get(BarrierFreeTourInfoService);
   const photoGalleryService = app.get(PhotoGalleryService);
@@ -54,7 +53,8 @@ async function bootstrap() {
   const wellnessTourismService = app.get(WellnessTourismService);
   // KTO 10/10 — final API integration
   const photoAwardService = app.get(PhotoAwardService);
-  registerAll(mcpServer, [
+
+  const registries: ToolRegistry[] = [
     { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanTourInfoService },
     {
       tools: BARRIER_FREE_TOUR_INFO_TOOLS,
@@ -68,7 +68,7 @@ async function bootstrap() {
     { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
     { tools: WELLNESS_TOURISM_TOOLS, service: wellnessTourismService },
     { tools: PHOTO_AWARD_TOOLS, service: photoAwardService },
-  ]);
+  ];
 
   // transport 선택 및 시작 (REQ-KTO-002)
   let adapter:
@@ -79,19 +79,27 @@ async function bootstrap() {
   const mode = env.mcpTransportMode;
 
   if (mode === 'stdio') {
+    // stdio: 단일 세션 — 기존 단일 McpServer 플로우 유지
+    const mcpServer = new McpServer({ name: 'kto-mcp', version: '0.1.0' });
+    registerAll(mcpServer, registries, store);
     const stdioAdapter = app.get(StdioTransportAdapter);
-    await stdioAdapter.start(mcpServer);
+    // SPEC-KTO-011: stdio 부트 시 env 기반 creds를 __stdio_default__로 store에 등록
+    await stdioAdapter.start(mcpServer, {
+      serviceKey: env.ktoServiceKey,
+      preencoded: env.ktoServiceKeyPreencoded,
+    });
     adapter = stdioAdapter;
   } else if (mode === 'http-streamable') {
+    // HTTP: 세션별 McpServer 팩토리 — registries를 어댑터에 전달
     const httpAdapter = app.get(HttpStreamableTransportAdapter);
-    await httpAdapter.start(mcpServer, env.mcpHttpPort);
+    await httpAdapter.start(registries, env.mcpHttpPort);
     adapter = httpAdapter;
     console.error(
       `[kto-mcp] HTTP streamable transport 시작 (port=${httpAdapter.getPort()})`,
     );
   } else if (mode === 'http-json') {
     const httpAdapter = app.get(HttpTransportAdapter);
-    await httpAdapter.start(mcpServer, env.mcpHttpPort);
+    await httpAdapter.start(registries, env.mcpHttpPort);
     adapter = httpAdapter;
     console.error(
       `[kto-mcp] HTTP JSON transport 시작 (port=${httpAdapter.getPort()})`,

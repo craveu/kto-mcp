@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { KtoHttpClient } from '../kto-http.client';
 import type { KtoServiceName } from '../common/constants';
 import type { KtoListResponse } from '../common/types';
+import type { KtoCredentials } from '../../mcp/session-credentials.store';
 import type { PhotoAwardItem } from './types';
 import type { PaPhokoAwrdListDto, PaPhokoAwrdSyncListDto } from './dto';
 
@@ -26,11 +27,13 @@ export class PhotoAwardService {
    */
   async phokoAwrdList(
     dto: PaPhokoAwrdListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<PhotoAwardItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'phokoAwrdList',
       params: { ...dto },
+      credentials,
     });
   }
 
@@ -40,11 +43,13 @@ export class PhotoAwardService {
    */
   async phokoAwrdSyncList(
     dto: PaPhokoAwrdSyncListDto,
+    credentials: KtoCredentials,
   ): Promise<KtoListResponse<PhotoAwardItem>> {
     return this.httpClient.request({
       service: this.service,
       operation: 'phokoAwrdSyncList',
       params: { ...dto },
+      credentials,
     });
   }
 }
