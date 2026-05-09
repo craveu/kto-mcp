@@ -7,6 +7,8 @@ import { KoreanTourInfoService } from './kto/korean-tour-info/korean-tour-info.s
 import { KOREAN_TOUR_INFO_TOOLS } from './kto/korean-tour-info/korean-tour-info.tools';
 import { BarrierFreeTourInfoService } from './kto/barrier-free-tour-info/barrier-free-tour-info.service';
 import { BARRIER_FREE_TOUR_INFO_TOOLS } from './kto/barrier-free-tour-info/barrier-free-tour-info.tools';
+import { PhotoGalleryService } from './kto/photo-gallery/photo-gallery.service';
+import { PHOTO_GALLERY_TOOLS } from './kto/photo-gallery/photo-gallery.tools';
 import { StdioTransportAdapter } from './mcp/transports/stdio.adapter';
 import { HttpStreamableTransportAdapter } from './mcp/transports/http-streamable.adapter';
 import { HttpTransportAdapter } from './mcp/transports/http.adapter';
@@ -26,15 +28,17 @@ async function bootstrap() {
     version: '0.1.0',
   });
 
-  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001)
+  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001, SPEC-KTO-003 REQ-KTO3-001)
   const koreanTourInfoService = app.get(KoreanTourInfoService);
   const barrierFreeTourInfoService = app.get(BarrierFreeTourInfoService);
+  const photoGalleryService = app.get(PhotoGalleryService);
   registerAll(mcpServer, [
     { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanTourInfoService },
     {
       tools: BARRIER_FREE_TOUR_INFO_TOOLS,
       service: barrierFreeTourInfoService,
     },
+    { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
   ]);
 
   // transport 선택 및 시작 (REQ-KTO-002)

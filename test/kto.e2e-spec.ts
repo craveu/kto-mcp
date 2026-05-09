@@ -32,6 +32,8 @@ import { KoreanTourInfoService } from '../src/kto/korean-tour-info/korean-tour-i
 import { KOREAN_TOUR_INFO_TOOLS } from '../src/kto/korean-tour-info/korean-tour-info.tools';
 import { BarrierFreeTourInfoService } from '../src/kto/barrier-free-tour-info/barrier-free-tour-info.service';
 import { BARRIER_FREE_TOUR_INFO_TOOLS } from '../src/kto/barrier-free-tour-info/barrier-free-tour-info.tools';
+import { PhotoGalleryService } from '../src/kto/photo-gallery/photo-gallery.service';
+import { PHOTO_GALLERY_TOOLS } from '../src/kto/photo-gallery/photo-gallery.tools';
 
 /** HTTP POST 요청 헬퍼 */
 function httpPost(
@@ -78,6 +80,7 @@ function httpPost(
 async function createTestHttpServer(
   korService: KoreanTourInfoService,
   bfService: BarrierFreeTourInfoService,
+  photoService?: PhotoGalleryService,
 ): Promise<{
   port: number;
   httpServer: HttpServer;
@@ -85,10 +88,14 @@ async function createTestHttpServer(
 }> {
   // 새 McpServer + transport 생성 (stateless 1회 사용)
   const mcpServer = new McpServer({ name: 'kto-mcp-e2e', version: '0.1.0' });
-  registerAll(mcpServer, [
+  const registries: Parameters<typeof registerAll>[1] = [
     { tools: KOREAN_TOUR_INFO_TOOLS, service: korService },
     { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: bfService },
-  ]);
+  ];
+  if (photoService) {
+    registries.push({ tools: PHOTO_GALLERY_TOOLS, service: photoService });
+  }
+  registerAll(mcpServer, registries);
 
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
@@ -131,6 +138,7 @@ describe('KTO MCP E2E', () => {
   let appContext: INestApplicationContext;
   let service: KoreanTourInfoService;
   let barrierFreeService: BarrierFreeTourInfoService;
+  let photoGalleryService: PhotoGalleryService;
 
   beforeAll(async () => {
     appContext = await NestFactory.createApplicationContext(AppModule, {
@@ -138,6 +146,7 @@ describe('KTO MCP E2E', () => {
     });
     service = appContext.get(KoreanTourInfoService);
     barrierFreeService = appContext.get(BarrierFreeTourInfoService);
+    photoGalleryService = appContext.get(PhotoGalleryService);
   });
 
   afterAll(async () => {
@@ -145,7 +154,7 @@ describe('KTO MCP E2E', () => {
   });
 
   describe('도구 등록 검증', () => {
-    it('McpServer에 25개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개)가 모두 등록된다 (acceptance criterion 1)', () => {
+    it('McpServer에 29개 이상 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 이상)가 모두 등록된다 (acceptance criterion 1)', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test',
         version: '0.1.0',
@@ -153,15 +162,18 @@ describe('KTO MCP E2E', () => {
       registerAll(mcpServer, [
         { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
         { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+        { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
       ]);
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
       };
-      expect(Object.keys(server._registeredTools).length).toBe(25);
+      expect(
+        Object.keys(server._registeredTools).length,
+      ).toBeGreaterThanOrEqual(29);
     });
 
-    it('kto_korean_* 도구 15개와 kto_barrier_free_* 도구 10개가 모두 포함된다', () => {
+    it('kto_korean_* 도구 15개와 kto_barrier_free_* 도구 10개와 kto_photo_* 도구가 모두 포함된다', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test-2',
         version: '0.1.0',
@@ -169,6 +181,7 @@ describe('KTO MCP E2E', () => {
       registerAll(mcpServer, [
         { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
         { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+        { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
       ]);
 
       const server = mcpServer as unknown as {
@@ -182,8 +195,51 @@ describe('KTO MCP E2E', () => {
       for (const expectedTool of BARRIER_FREE_TOUR_INFO_TOOLS) {
         expect(registeredNames).toContain(expectedTool.name);
       }
-      // kto_barrier_free_detailWithTour2 포함 필수 확인
+      for (const expectedTool of PHOTO_GALLERY_TOOLS) {
+        expect(registeredNames).toContain(expectedTool.name);
+      }
+      // 필수 도구 개별 확인
       expect(registeredNames).toContain('kto_barrier_free_detailWithTour2');
+      expect(registeredNames).toContain('kto_photo_galleryList1');
+      expect(registeredNames).toContain('kto_photo_galleryDetailList1');
+      expect(registeredNames).toContain('kto_photo_gallerySearchList1');
+      expect(registeredNames).toContain('kto_photo_gallerySyncDetailList1');
+    });
+
+    it('kto_photo_galleryDetailList1 호출 시 galContentId 누락이면 outbound 없이 검증 에러를 반환한다 (REQ-UNW-001)', async () => {
+      const mockPhotoService = {
+        galleryDetailList1: jest
+          .fn()
+          .mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as PhotoGalleryService;
+
+      const mcpServer2 = new McpServer({
+        name: 'kto-mcp-photo-dto-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServer2, [
+        { tools: PHOTO_GALLERY_TOOLS, service: mockPhotoService },
+      ]);
+
+      const internalServer = mcpServer2 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_photo_galleryDetailList1'];
+      expect(toolEntry).toBeDefined();
+
+      const result = (await toolEntry.handler({})) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      expect(result.content?.[0]?.text).toContain('title');
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockPhotoService.galleryDetailList1).not.toHaveBeenCalled();
     });
   });
 

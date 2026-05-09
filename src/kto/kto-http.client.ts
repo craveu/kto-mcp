@@ -171,6 +171,26 @@ export class KtoHttpClient {
         // JSON 파싱
         const parsed = JSON.parse(bodyText) as KtoRawResponse<T>;
 
+        // @MX:NOTE: [AUTO] KTO 일부 오퍼레이션(예: PhotoGalleryService1.galleryDetailList1)은
+        // 파라미터 검증 실패를 평면 envelope으로 반환. 정상 envelope 검증 전에 처리.
+        // 평면 에러 패턴: {responseTime, resultCode, resultMsg} (response 래퍼 없음)
+        if (
+          parsed &&
+          typeof parsed === 'object' &&
+          !('response' in parsed) &&
+          'resultCode' in parsed &&
+          (parsed as Record<string, unknown>).resultCode !== '0000'
+        ) {
+          const code = (parsed as Record<string, unknown>).resultCode as string;
+          const msg =
+            ((parsed as Record<string, unknown>).resultMsg as string) ??
+            'KTO API error';
+          const permanent = PERMANENT_ERROR_CODES.has(code);
+          // 재시도 루프를 즉시 종료하고 아래의 lastError 경로로 throw
+          lastError = new KtoApiError(code, response.status, msg, permanent);
+          break;
+        }
+
         // resultCode 검사
         const resultCode = parsed.response?.header?.resultCode;
         if (resultCode && resultCode !== '0000' && resultCode !== '00') {

@@ -163,6 +163,41 @@ describe('KtoHttpClient', () => {
     });
   });
 
+  describe('평면 에러 envelope 처리', () => {
+    it('response 래퍼 없는 {responseTime,resultCode,resultMsg} 응답이면 KtoApiError를 throw해야 한다', async () => {
+      // PhotoGalleryService1.galleryDetailList1은 파라미터 검증 실패 시
+      // 정상 response.header 구조 대신 평면 envelope을 반환한다
+      nock('http://apis.data.go.kr')
+        .get('/B551011/PhotoGalleryService1/galleryDetailList1')
+        .query(true)
+        .reply(
+          200,
+          {
+            responseTime: '2026-05-09T15:58:39.425',
+            resultCode: '11',
+            resultMsg: 'NO_MANDATORY_REQUEST_PARAMETERS_ERROR1(title)',
+          },
+          { 'Content-Type': 'application/json' },
+        );
+
+      let caught: KtoApiError | undefined;
+      try {
+        await client.request({
+          service: 'PhotoGalleryService1',
+          operation: 'galleryDetailList1',
+          params: { galContentId: '1002144' },
+        });
+      } catch (e) {
+        caught = e as KtoApiError;
+      }
+
+      expect(caught).toBeInstanceOf(KtoApiError);
+      expect(caught?.code).toBe('11');
+      expect(caught?.permanent).toBe(false);
+      expect(caught?.httpStatus).toBe(200);
+    });
+  });
+
   describe('게이트웨이 XML 에러 처리', () => {
     it('resultCode=30 XML 응답이면 permanent=true KtoApiError를 throw해야 한다', async () => {
       const xmlBody = `<?xml version="1.0" encoding="UTF-8"?>

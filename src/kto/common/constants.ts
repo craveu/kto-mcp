@@ -1,7 +1,7 @@
 // @MX:NOTE: [AUTO] BASE_URL_MAP은 KTO B551011 게이트웨이 산하 모든 서비스 path의 단일 flat namespace다.
-// 같은 맵에 (1) 언어 변체(KorService2, EngService2, ...) 와 (2) 기능적 형제 서비스(KorWithService2, ...)가 공존한다.
+// 같은 맵에 (1) 언어 변체(KorService2, EngService2, ...) 와 (2) 기능적 형제 서비스(KorWithService2, PhotoGalleryService1, ...)가 공존한다.
 // 다국어 확장 시 EngService2 패턴, 사이드 서비스 추가 시 KorWithService2 패턴을 따른다.
-// @MX:SPEC: SPEC-KTO-001 REQ-OPT-001, SPEC-KTO-002 REQ-OPT-001
+// @MX:SPEC: SPEC-KTO-001 REQ-OPT-001, SPEC-KTO-002 REQ-OPT-001, SPEC-KTO-003 REQ-OPT-001
 
 /**
  * KTO 서비스명 → base URL 매핑.
@@ -18,6 +18,7 @@ export const BASE_URL_MAP = {
   SpnService2: 'http://apis.data.go.kr/B551011/SpnService2',
   RusService2: 'http://apis.data.go.kr/B551011/RusService2',
   KorWithService2: 'http://apis.data.go.kr/B551011/KorWithService2',
+  PhotoGalleryService1: 'http://apis.data.go.kr/B551011/PhotoGalleryService1',
 } as const;
 
 /** 지원하는 KTO 서비스명 union 타입 */
