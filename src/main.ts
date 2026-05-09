@@ -17,6 +17,8 @@ import { DurunubiService } from './kto/durunubi/durunubi.service';
 import { DURUNUBI_TOOLS } from './kto/durunubi/durunubi.tools';
 import { PetTourService } from './kto/pet-tour/pet-tour.service';
 import { PET_TOUR_TOOLS } from './kto/pet-tour/pet-tour.tools';
+import { MedicalTourismService } from './kto/medical-tourism/medical-tourism.service';
+import { MEDICAL_TOURISM_TOOLS } from './kto/medical-tourism/medical-tourism.tools';
 import { StdioTransportAdapter } from './mcp/transports/stdio.adapter';
 import { HttpStreamableTransportAdapter } from './mcp/transports/http-streamable.adapter';
 import { HttpTransportAdapter } from './mcp/transports/http.adapter';
@@ -36,7 +38,7 @@ async function bootstrap() {
     version: '0.1.0',
   });
 
-  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001, SPEC-KTO-003 REQ-KTO3-001, SPEC-KTO-004 REQ-KTO4-001, SPEC-KTO-005 REQ-KTO5-001, SPEC-KTO-006 REQ-KTO6-001, SPEC-KTO-007 REQ-KTO7-001)
+  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001, SPEC-KTO-003 REQ-KTO3-001, SPEC-KTO-004 REQ-KTO4-001, SPEC-KTO-005 REQ-KTO5-001, SPEC-KTO-006 REQ-KTO6-001, SPEC-KTO-007 REQ-KTO7-001, SPEC-KTO-008 REQ-KTO8-001)
   const koreanTourInfoService = app.get(KoreanTourInfoService);
   const barrierFreeTourInfoService = app.get(BarrierFreeTourInfoService);
   const photoGalleryService = app.get(PhotoGalleryService);
@@ -44,6 +46,7 @@ async function bootstrap() {
   const audioGuideService = app.get(AudioGuideService);
   const durunubiService = app.get(DurunubiService);
   const petTourService = app.get(PetTourService);
+  const medicalTourismService = app.get(MedicalTourismService);
   registerAll(mcpServer, [
     { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanTourInfoService },
     {
@@ -55,6 +58,7 @@ async function bootstrap() {
     { tools: ODII_TOOLS, service: audioGuideService },
     { tools: DURUNUBI_TOOLS, service: durunubiService },
     { tools: PET_TOUR_TOOLS, service: petTourService },
+    { tools: MEDICAL_TOURISM_TOOLS, service: medicalTourismService },
   ]);
 
   // transport 선택 및 시작 (REQ-KTO-002)

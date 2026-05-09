@@ -40,4 +40,10 @@ describe('BASE_URL_MAP', () => {
       'http://apis.data.go.kr/B551011/KorPetTourService2',
     );
   });
+
+  it('MdclTursmService URL이 등록되어 있어야 한다 (SPEC-KTO-008 REQ-OPT-001)', () => {
+    expect(BASE_URL_MAP.MdclTursmService).toBe(
+      'http://apis.data.go.kr/B551011/MdclTursmService',
+    );
+  });
 });
