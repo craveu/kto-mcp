@@ -1,11 +1,59 @@
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
+import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import type { McpToolDefinition } from './types/mcp.types';
 import type { KoreanTourInfoService } from '../kto/korean-tour-info/korean-tour-info.service';
 import { KtoApiError, KtoValidationError } from '../kto/common/kto-error';
 import { KOREAN_TOUR_INFO_TOOLS } from '../kto/korean-tour-info/korean-tour-info.tools';
+
+interface JsonSchemaField {
+  type?: string;
+  description?: string;
+  enum?: string[];
+  minimum?: number;
+}
+
+interface JsonSchemaObject {
+  type?: string;
+  properties?: Record<string, JsonSchemaField>;
+  required?: string[];
+}
+
+// JSON Schema(이 프로젝트가 KOREAN_TOUR_INFO_TOOLS에 보유한 형태)를
+// MCP SDK가 요구하는 ZodRawShape로 변환한다. SDK가 inputSchema를 받지 않으면
+// 핸들러 첫 인자가 RequestHandlerExtra(AbortSignal 등)가 되어
+// class-transformer가 "Illegal constructor"를 던진다.
+function jsonSchemaToZodShape(
+  schema: JsonSchemaObject | undefined,
+): Record<string, z.ZodTypeAny> {
+  if (!schema || schema.type !== 'object' || !schema.properties) {
+    return {};
+  }
+  const required = new Set(schema.required ?? []);
+  const shape: Record<string, z.ZodTypeAny> = {};
+  for (const [name, field] of Object.entries(schema.properties)) {
+    let z_: z.ZodTypeAny;
+    if (field.type === 'string') {
+      z_ =
+        field.enum && field.enum.length > 0
+          ? z.enum(field.enum as [string, ...string[]])
+          : z.string();
+    } else if (field.type === 'number' || field.type === 'integer') {
+      let n = z.number();
+      if (field.type === 'integer') n = n.int();
+      if (typeof field.minimum === 'number') n = n.min(field.minimum);
+      z_ = n;
+    } else {
+      z_ = z.unknown();
+    }
+    if (field.description) z_ = z_.describe(field.description);
+    if (!required.has(name)) z_ = z_.optional();
+    shape[name] = z_;
+  }
+  return shape;
+}
 
 // @MX:ANCHOR: [AUTO] 모든 MCP transport의 도구 등록 진입점
 // @MX:REASON: 모든 transport 어댑터(stdio, http-streamable, http)가 이 함수를 호출한다. fan_in=3
@@ -19,12 +67,16 @@ export function registerAll(
   service: KoreanTourInfoService,
 ): void {
   for (const tool of KOREAN_TOUR_INFO_TOOLS) {
+    const inputShape = jsonSchemaToZodShape(
+      tool.inputSchema as JsonSchemaObject | undefined,
+    );
     server.registerTool(
       tool.name,
       {
         description: tool.description,
-        // SDK는 Zod schema만 inputSchema로 허용한다.
-        // DTO 검증은 핸들러 내부(handleToolCall)에서 class-validator로 수행한다.
+        // ZodRawShape를 넘겨야 SDK가 클라이언트 args를 핸들러 1번 인자로 전달한다.
+        // class-validator로 한 번 더 강한 검증을 handleToolCall 내부에서 수행한다.
+        inputSchema: inputShape,
       },
       async (args: Record<string, unknown>): Promise<CallToolResult> => {
         return handleToolCall(tool, service, args);
