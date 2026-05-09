@@ -13,6 +13,8 @@ import { GoCampingService } from './kto/go-camping/go-camping.service';
 import { GO_CAMPING_TOOLS } from './kto/go-camping/go-camping.tools';
 import { AudioGuideService } from './kto/audio-guide/audio-guide.service';
 import { ODII_TOOLS } from './kto/audio-guide/audio-guide.tools';
+import { DurunubiService } from './kto/durunubi/durunubi.service';
+import { DURUNUBI_TOOLS } from './kto/durunubi/durunubi.tools';
 import { StdioTransportAdapter } from './mcp/transports/stdio.adapter';
 import { HttpStreamableTransportAdapter } from './mcp/transports/http-streamable.adapter';
 import { HttpTransportAdapter } from './mcp/transports/http.adapter';
@@ -32,12 +34,13 @@ async function bootstrap() {
     version: '0.1.0',
   });
 
-  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001, SPEC-KTO-003 REQ-KTO3-001, SPEC-KTO-004 REQ-KTO4-001, SPEC-KTO-005 REQ-KTO5-001)
+  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001, SPEC-KTO-003 REQ-KTO3-001, SPEC-KTO-004 REQ-KTO4-001, SPEC-KTO-005 REQ-KTO5-001, SPEC-KTO-006 REQ-KTO6-001)
   const koreanTourInfoService = app.get(KoreanTourInfoService);
   const barrierFreeTourInfoService = app.get(BarrierFreeTourInfoService);
   const photoGalleryService = app.get(PhotoGalleryService);
   const goCampingService = app.get(GoCampingService);
   const audioGuideService = app.get(AudioGuideService);
+  const durunubiService = app.get(DurunubiService);
   registerAll(mcpServer, [
     { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanTourInfoService },
     {
@@ -47,6 +50,7 @@ async function bootstrap() {
     { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
     { tools: GO_CAMPING_TOOLS, service: goCampingService },
     { tools: ODII_TOOLS, service: audioGuideService },
+    { tools: DURUNUBI_TOOLS, service: durunubiService },
   ]);
 
   // transport 선택 및 시작 (REQ-KTO-002)

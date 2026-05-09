@@ -28,4 +28,10 @@ describe('BASE_URL_MAP', () => {
   it('Odii URL이 등록되어 있어야 한다 (SPEC-KTO-005 REQ-OPT-001)', () => {
     expect(BASE_URL_MAP.Odii).toBe('http://apis.data.go.kr/B551011/Odii');
   });
+
+  it('Durunubi URL이 등록되어 있어야 한다 (SPEC-KTO-006 REQ-OPT-001)', () => {
+    expect(BASE_URL_MAP.Durunubi).toBe(
+      'http://apis.data.go.kr/B551011/Durunubi',
+    );
+  });
 });

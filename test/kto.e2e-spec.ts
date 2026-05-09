@@ -38,6 +38,8 @@ import { GoCampingService } from '../src/kto/go-camping/go-camping.service';
 import { GO_CAMPING_TOOLS } from '../src/kto/go-camping/go-camping.tools';
 import { AudioGuideService } from '../src/kto/audio-guide/audio-guide.service';
 import { ODII_TOOLS } from '../src/kto/audio-guide/audio-guide.tools';
+import { DurunubiService } from '../src/kto/durunubi/durunubi.service';
+import { DURUNUBI_TOOLS } from '../src/kto/durunubi/durunubi.tools';
 
 /** HTTP POST 요청 헬퍼 */
 function httpPost(
@@ -145,6 +147,7 @@ describe('KTO MCP E2E', () => {
   let photoGalleryService: PhotoGalleryService;
   let goCampingService: GoCampingService;
   let audioGuideService: AudioGuideService;
+  let durunubiService: DurunubiService;
 
   beforeAll(async () => {
     appContext = await NestFactory.createApplicationContext(AppModule, {
@@ -155,6 +158,7 @@ describe('KTO MCP E2E', () => {
     photoGalleryService = appContext.get(PhotoGalleryService);
     goCampingService = appContext.get(GoCampingService);
     audioGuideService = appContext.get(AudioGuideService);
+    durunubiService = appContext.get(DurunubiService);
   });
 
   afterAll(async () => {
@@ -162,7 +166,7 @@ describe('KTO MCP E2E', () => {
   });
 
   describe('도구 등록 검증', () => {
-    it('McpServer에 42개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개)가 모두 등록된다 (acceptance criterion 1)', () => {
+    it('McpServer에 44개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개 + kto_durunubi_* 2개)가 모두 등록된다 (acceptance criterion 1)', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test',
         version: '0.1.0',
@@ -173,15 +177,73 @@ describe('KTO MCP E2E', () => {
         { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
         { tools: GO_CAMPING_TOOLS, service: goCampingService },
         { tools: ODII_TOOLS, service: audioGuideService },
+        { tools: DURUNUBI_TOOLS, service: durunubiService },
       ]);
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
       };
-      expect(Object.keys(server._registeredTools).length).toBe(42);
+      expect(Object.keys(server._registeredTools).length).toBe(44);
     });
 
-    it('kto_korean_* 15 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 도구가 모두 포함된다', () => {
+    it('kto_durunubi_* 도구가 정확히 2개여야 한다 (SPEC-KTO-006 Scenario 2)', () => {
+      const mcpServer = new McpServer({
+        name: 'kto-mcp-durunubi-count-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServer, [
+        { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
+        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+        { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+        { tools: GO_CAMPING_TOOLS, service: goCampingService },
+        { tools: ODII_TOOLS, service: audioGuideService },
+        { tools: DURUNUBI_TOOLS, service: durunubiService },
+      ]);
+
+      const server = mcpServer as unknown as {
+        _registeredTools: Record<string, unknown>;
+      };
+      const durunubiTools = Object.keys(server._registeredTools).filter(
+        (name) => name.startsWith('kto_durunubi_'),
+      );
+      expect(durunubiTools).toHaveLength(2);
+    });
+
+    it('kto_durunubi_courseList: numOfRows=0 전달 시 MCP 오류를 반환한다 (REQ-UNW-001, Scenario 5)', async () => {
+      const mockDurunubiService = {
+        courseList: jest.fn().mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as DurunubiService;
+
+      const mcpServer4 = new McpServer({
+        name: 'kto-mcp-durunubi-dto-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServer4, [
+        { tools: DURUNUBI_TOOLS, service: mockDurunubiService },
+      ]);
+
+      const internalServer = mcpServer4 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_durunubi_courseList'];
+      expect(toolEntry).toBeDefined();
+
+      // numOfRows=0 전달 — REQ-UNW-001: KTO 호출 차단
+      const result = (await toolEntry.handler({ numOfRows: 0 })) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockDurunubiService.courseList).not.toHaveBeenCalled();
+    });
+
+    it('kto_korean_* 15 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 + kto_durunubi_* 2 도구가 모두 포함된다', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test-2',
         version: '0.1.0',
@@ -192,6 +254,7 @@ describe('KTO MCP E2E', () => {
         { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
         { tools: GO_CAMPING_TOOLS, service: goCampingService },
         { tools: ODII_TOOLS, service: audioGuideService },
+        { tools: DURUNUBI_TOOLS, service: durunubiService },
       ]);
 
       const server = mcpServer as unknown as {
@@ -214,6 +277,12 @@ describe('KTO MCP E2E', () => {
       for (const expectedTool of ODII_TOOLS) {
         expect(registeredNames).toContain(expectedTool.name);
       }
+      for (const expectedTool of DURUNUBI_TOOLS) {
+        expect(registeredNames).toContain(expectedTool.name);
+      }
+      // 두루누비 도구 개별 확인
+      expect(registeredNames).toContain('kto_durunubi_courseList');
+      expect(registeredNames).toContain('kto_durunubi_routeList');
       // 필수 도구 개별 확인
       expect(registeredNames).toContain('kto_barrier_free_detailWithTour2');
       expect(registeredNames).toContain('kto_photo_galleryList1');
@@ -248,6 +317,7 @@ describe('KTO MCP E2E', () => {
         { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
         { tools: GO_CAMPING_TOOLS, service: goCampingService },
         { tools: ODII_TOOLS, service: audioGuideService },
+        { tools: DURUNUBI_TOOLS, service: durunubiService },
       ]);
 
       const server = mcpServer as unknown as {

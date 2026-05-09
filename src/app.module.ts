@@ -6,6 +6,7 @@ import { BarrierFreeTourInfoModule } from './kto/barrier-free-tour-info/barrier-
 import { PhotoGalleryModule } from './kto/photo-gallery/photo-gallery.module';
 import { GoCampingModule } from './kto/go-camping/go-camping.module';
 import { AudioGuideModule } from './kto/audio-guide/audio-guide.module';
+import { DurunubiModule } from './kto/durunubi/durunubi.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AudioGuideModule } from './kto/audio-guide/audio-guide.module';
     PhotoGalleryModule,
     GoCampingModule,
     AudioGuideModule,
+    DurunubiModule,
   ],
 })
 export class AppModule {}

@@ -1,7 +1,7 @@
 // @MX:NOTE: [AUTO] BASE_URL_MAP은 KTO B551011 게이트웨이 산하 모든 서비스 path의 단일 flat namespace다.
 // 같은 맵에 4가지 패턴이 공존한다: (1) V2 다국어 다중 path(KorService2, EngService2, ...), (2) V2 단독 사이드 서비스(KorWithService2), (3) V/숫자 suffix 없는 평면 형태(PhotoGalleryService1, GoCamping), (4) 단일 path + langCode 파라미터(Odii).
 // 패턴별 가이드: 다국어 확장 → EngService2 패턴, 사이드 서비스 → KorWithService2 패턴, suffix 없는 신규 → GoCamping 패턴, langCode 파라미터 다국어 → Odii 패턴.
-// @MX:SPEC: SPEC-KTO-001 REQ-OPT-001, SPEC-KTO-002 REQ-OPT-001, SPEC-KTO-003 REQ-OPT-001, SPEC-KTO-004 REQ-OPT-001, SPEC-KTO-005 REQ-OPT-001
+// @MX:SPEC: SPEC-KTO-001 REQ-OPT-001, SPEC-KTO-002 REQ-OPT-001, SPEC-KTO-003 REQ-OPT-001, SPEC-KTO-004 REQ-OPT-001, SPEC-KTO-005 REQ-OPT-001, SPEC-KTO-006 REQ-OPT-001
 
 /**
  * KTO 서비스명 → base URL 매핑.
@@ -21,6 +21,7 @@ export const BASE_URL_MAP = {
   PhotoGalleryService1: 'http://apis.data.go.kr/B551011/PhotoGalleryService1',
   GoCamping: 'http://apis.data.go.kr/B551011/GoCamping',
   Odii: 'http://apis.data.go.kr/B551011/Odii',
+  Durunubi: 'http://apis.data.go.kr/B551011/Durunubi',
 } as const;
 
 /** 지원하는 KTO 서비스명 union 타입 */
