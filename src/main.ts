@@ -4,6 +4,9 @@ import { AppModule } from './app.module';
 import { getEnv } from './env';
 import { registerAll } from './mcp/tool-registry';
 import { KoreanTourInfoService } from './kto/korean-tour-info/korean-tour-info.service';
+import { KOREAN_TOUR_INFO_TOOLS } from './kto/korean-tour-info/korean-tour-info.tools';
+import { BarrierFreeTourInfoService } from './kto/barrier-free-tour-info/barrier-free-tour-info.service';
+import { BARRIER_FREE_TOUR_INFO_TOOLS } from './kto/barrier-free-tour-info/barrier-free-tour-info.tools';
 import { StdioTransportAdapter } from './mcp/transports/stdio.adapter';
 import { HttpStreamableTransportAdapter } from './mcp/transports/http-streamable.adapter';
 import { HttpTransportAdapter } from './mcp/transports/http.adapter';
@@ -23,9 +26,16 @@ async function bootstrap() {
     version: '0.1.0',
   });
 
-  // 도구 등록 (REQ-KTO-005, REQ-KTO-006)
-  const service = app.get(KoreanTourInfoService);
-  registerAll(mcpServer, service);
+  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001)
+  const koreanTourInfoService = app.get(KoreanTourInfoService);
+  const barrierFreeTourInfoService = app.get(BarrierFreeTourInfoService);
+  registerAll(mcpServer, [
+    { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanTourInfoService },
+    {
+      tools: BARRIER_FREE_TOUR_INFO_TOOLS,
+      service: barrierFreeTourInfoService,
+    },
+  ]);
 
   // transport 선택 및 시작 (REQ-KTO-002)
   let adapter:

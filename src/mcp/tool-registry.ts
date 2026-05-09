@@ -4,9 +4,7 @@ import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import type { McpToolDefinition } from './types/mcp.types';
-import type { KoreanTourInfoService } from '../kto/korean-tour-info/korean-tour-info.service';
 import { KtoApiError, KtoValidationError } from '../kto/common/kto-error';
-import { KOREAN_TOUR_INFO_TOOLS } from '../kto/korean-tour-info/korean-tour-info.tools';
 
 interface JsonSchemaField {
   type?: string;
@@ -55,33 +53,52 @@ function jsonSchemaToZodShape(
   return shape;
 }
 
+/** 도구 레지스트리 항목: 도구 정의 배열과 해당 서비스 객체를 묶는다 */
+export interface ToolRegistry {
+  tools: McpToolDefinition[];
+  service: object;
+}
+
 // @MX:ANCHOR: [AUTO] 모든 MCP transport의 도구 등록 진입점
-// @MX:REASON: 모든 transport 어댑터(stdio, http-streamable, http)가 이 함수를 호출한다. fan_in=3
+// @MX:REASON: 모든 transport 어댑터(stdio, http-streamable, http)가 이 함수를 호출한다. fan_in=3.
+// 복수 레지스트리(KorService2 15개 + KorWithService2 10개 등)를 지원하도록 일반화됨.
 
 /**
- * KOREAN_TOUR_INFO_TOOLS 배열을 순회하여 McpServer에 일괄 등록한다.
+ * 복수의 도구 레지스트리를 순회하여 McpServer에 일괄 등록한다.
  * 각 도구 핸들러는 class-validator DTO 검증 → 서비스 메서드 호출 → 결과 직렬화 순서로 동작한다.
+ *
+ * @example
+ * registerAll(server, [
+ *   { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanTourInfoService },
+ *   { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeTourInfoService },
+ * ]);
  */
 export function registerAll(
   server: McpServer,
-  service: KoreanTourInfoService,
+  registries: ToolRegistry[],
 ): void {
-  for (const tool of KOREAN_TOUR_INFO_TOOLS) {
-    const inputShape = jsonSchemaToZodShape(
-      tool.inputSchema as JsonSchemaObject | undefined,
-    );
-    server.registerTool(
-      tool.name,
-      {
-        description: tool.description,
-        // ZodRawShape를 넘겨야 SDK가 클라이언트 args를 핸들러 1번 인자로 전달한다.
-        // class-validator로 한 번 더 강한 검증을 handleToolCall 내부에서 수행한다.
-        inputSchema: inputShape,
-      },
-      async (args: Record<string, unknown>): Promise<CallToolResult> => {
-        return handleToolCall(tool, service, args);
-      },
-    );
+  for (const { tools, service } of registries) {
+    for (const tool of tools) {
+      const inputShape = jsonSchemaToZodShape(
+        tool.inputSchema as JsonSchemaObject | undefined,
+      );
+      server.registerTool(
+        tool.name,
+        {
+          description: tool.description,
+          // ZodRawShape를 넘겨야 SDK가 클라이언트 args를 핸들러 1번 인자로 전달한다.
+          // class-validator로 한 번 더 강한 검증을 handleToolCall 내부에서 수행한다.
+          inputSchema: inputShape,
+        },
+        async (args: Record<string, unknown>): Promise<CallToolResult> => {
+          return handleToolCall(
+            tool,
+            service as Record<string, (dto: unknown) => Promise<unknown>>,
+            args,
+          );
+        },
+      );
+    }
   }
 }
 
@@ -91,7 +108,7 @@ export function registerAll(
  */
 async function handleToolCall(
   tool: McpToolDefinition,
-  service: KoreanTourInfoService,
+  service: Record<string, (dto: unknown) => Promise<unknown>>,
   args: Record<string, unknown>,
 ): Promise<CallToolResult> {
   // DTO 검증
@@ -116,9 +133,7 @@ async function handleToolCall(
 
   // 서비스 메서드 호출
   try {
-    const serviceMethod = (
-      service as unknown as Record<string, (dto: unknown) => Promise<unknown>>
-    )[tool.methodName];
+    const serviceMethod = service[tool.methodName];
     const result: unknown = await serviceMethod.call(service, dto);
     return {
       content: [

@@ -30,6 +30,8 @@ import { AppModule } from '../src/app.module';
 import { registerAll } from '../src/mcp/tool-registry';
 import { KoreanTourInfoService } from '../src/kto/korean-tour-info/korean-tour-info.service';
 import { KOREAN_TOUR_INFO_TOOLS } from '../src/kto/korean-tour-info/korean-tour-info.tools';
+import { BarrierFreeTourInfoService } from '../src/kto/barrier-free-tour-info/barrier-free-tour-info.service';
+import { BARRIER_FREE_TOUR_INFO_TOOLS } from '../src/kto/barrier-free-tour-info/barrier-free-tour-info.tools';
 
 /** HTTP POST 요청 헬퍼 */
 function httpPost(
@@ -73,14 +75,20 @@ function httpPost(
 }
 
 /** 테스트용 HTTP MCP 서버 생성 헬퍼 */
-async function createTestHttpServer(service: KoreanTourInfoService): Promise<{
+async function createTestHttpServer(
+  korService: KoreanTourInfoService,
+  bfService: BarrierFreeTourInfoService,
+): Promise<{
   port: number;
   httpServer: HttpServer;
   cleanup: () => Promise<void>;
 }> {
   // 새 McpServer + transport 생성 (stateless 1회 사용)
   const mcpServer = new McpServer({ name: 'kto-mcp-e2e', version: '0.1.0' });
-  registerAll(mcpServer, service);
+  registerAll(mcpServer, [
+    { tools: KOREAN_TOUR_INFO_TOOLS, service: korService },
+    { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: bfService },
+  ]);
 
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
@@ -122,12 +130,14 @@ async function createTestHttpServer(service: KoreanTourInfoService): Promise<{
 describe('KTO MCP E2E', () => {
   let appContext: INestApplicationContext;
   let service: KoreanTourInfoService;
+  let barrierFreeService: BarrierFreeTourInfoService;
 
   beforeAll(async () => {
     appContext = await NestFactory.createApplicationContext(AppModule, {
       logger: false,
     });
     service = appContext.get(KoreanTourInfoService);
+    barrierFreeService = appContext.get(BarrierFreeTourInfoService);
   });
 
   afterAll(async () => {
@@ -135,25 +145,31 @@ describe('KTO MCP E2E', () => {
   });
 
   describe('도구 등록 검증', () => {
-    it('McpServer에 15개 KTO 도구가 모두 등록된다 (acceptance criterion 1)', () => {
+    it('McpServer에 25개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개)가 모두 등록된다 (acceptance criterion 1)', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer, service);
+      registerAll(mcpServer, [
+        { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
+        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+      ]);
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
       };
-      expect(Object.keys(server._registeredTools).length).toBe(15);
+      expect(Object.keys(server._registeredTools).length).toBe(25);
     });
 
-    it('등록된 도구 이름이 KOREAN_TOUR_INFO_TOOLS와 일치한다', () => {
+    it('kto_korean_* 도구 15개와 kto_barrier_free_* 도구 10개가 모두 포함된다', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test-2',
         version: '0.1.0',
       });
-      registerAll(mcpServer, service);
+      registerAll(mcpServer, [
+        { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
+        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+      ]);
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
@@ -163,12 +179,20 @@ describe('KTO MCP E2E', () => {
       for (const expectedTool of KOREAN_TOUR_INFO_TOOLS) {
         expect(registeredNames).toContain(expectedTool.name);
       }
+      for (const expectedTool of BARRIER_FREE_TOUR_INFO_TOOLS) {
+        expect(registeredNames).toContain(expectedTool.name);
+      }
+      // kto_barrier_free_detailWithTour2 포함 필수 확인
+      expect(registeredNames).toContain('kto_barrier_free_detailWithTour2');
     });
   });
 
   describe('HTTP transport smoke test (acceptance criterion 2)', () => {
     it('POST /mcp initialize 요청이 200을 반환한다', async () => {
-      const { port, cleanup } = await createTestHttpServer(service);
+      const { port, cleanup } = await createTestHttpServer(
+        service,
+        barrierFreeService,
+      );
 
       try {
         const payload = JSON.stringify({
@@ -209,7 +233,9 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-dto-inprocess',
         version: '0.1.0',
       });
-      registerAll(mcpServer2, mockService2);
+      registerAll(mcpServer2, [
+        { tools: KOREAN_TOUR_INFO_TOOLS, service: mockService2 },
+      ]);
 
       // _registeredTools에서 detailCommon2 핸들러를 직접 호출
       const internalServer = mcpServer2 as unknown as {
@@ -246,7 +272,9 @@ describe('KTO MCP E2E', () => {
         name: 'kto-mcp-dto-test',
         version: '0.1.0',
       });
-      registerAll(mcpServer, mockService);
+      registerAll(mcpServer, [
+        { tools: KOREAN_TOUR_INFO_TOOLS, service: mockService },
+      ]);
 
       const transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: undefined,

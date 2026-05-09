@@ -1,13 +1,14 @@
 import 'reflect-metadata';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { KOREAN_TOUR_INFO_TOOLS } from '../kto/korean-tour-info/korean-tour-info.tools';
-import { KoreanTourInfoService } from '../kto/korean-tour-info/korean-tour-info.service';
+import { BARRIER_FREE_TOUR_INFO_TOOLS } from '../kto/barrier-free-tour-info/barrier-free-tour-info.tools';
 import { registerAll } from './tool-registry';
 import { KtoApiError, KtoValidationError } from '../kto/common/kto-error';
 
 describe('registerAll()', () => {
   let mcpServer: jest.Mocked<McpServer>;
-  let service: jest.Mocked<KoreanTourInfoService>;
+  let koreanService: Record<string, jest.Mock>;
+  let barrierFreeService: Record<string, jest.Mock>;
 
   beforeEach(() => {
     // McpServer 모킹 — registerTool 호출 추적
@@ -15,15 +16,44 @@ describe('registerAll()', () => {
       registerTool: jest.fn(),
     } as unknown as jest.Mocked<McpServer>;
 
-    // KoreanTourInfoService 모킹 — 모든 메서드 jest.fn()으로 초기화
-    service = {} as jest.Mocked<KoreanTourInfoService>;
+    // KoreanTourInfoService 모킹
+    koreanService = {};
     for (const tool of KOREAN_TOUR_INFO_TOOLS) {
-      (service as Record<string, unknown>)[tool.methodName] = jest.fn();
+      koreanService[tool.methodName] = jest.fn();
+    }
+
+    // BarrierFreeTourInfoService 모킹
+    barrierFreeService = {};
+    for (const tool of BARRIER_FREE_TOUR_INFO_TOOLS) {
+      barrierFreeService[tool.methodName] = jest.fn();
     }
   });
 
-  it('15개 도구를 McpServer에 등록한다', () => {
-    registerAll(mcpServer, service);
+  it('15개 KTO 도구와 10개 무장애 도구를 합쳐 25개를 McpServer에 등록한다', () => {
+    registerAll(mcpServer, [
+      { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanService },
+      { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+    ]);
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mcpServer.registerTool).toHaveBeenCalledTimes(25);
+    const names = (mcpServer.registerTool as jest.Mock).mock.calls.map(
+      (call: unknown[]) => call[0],
+    );
+    // 한국 관광정보 도구 15개 포함 확인
+    for (const tool of KOREAN_TOUR_INFO_TOOLS) {
+      expect(names).toContain(tool.name);
+    }
+    // 무장애 도구 10개 포함 확인
+    for (const tool of BARRIER_FREE_TOUR_INFO_TOOLS) {
+      expect(names).toContain(tool.name);
+    }
+  });
+
+  it('단일 레지스트리 사용 시 15개 도구를 등록한다 (하위 호환 패턴)', () => {
+    registerAll(mcpServer, [
+      { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanService },
+    ]);
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mcpServer.registerTool).toHaveBeenCalledTimes(15);
@@ -34,7 +64,9 @@ describe('registerAll()', () => {
   });
 
   it('도구 핸들러가 서비스 메서드를 호출하고 결과를 MCP 형식으로 반환한다', async () => {
-    registerAll(mcpServer, service);
+    registerAll(mcpServer, [
+      { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanService },
+    ]);
 
     // 첫 번째 도구 (areaBasedList2) 핸들러 추출
     const firstCall = (mcpServer.registerTool as jest.Mock).mock.calls[0] as [
@@ -45,9 +77,7 @@ describe('registerAll()', () => {
     const handler = firstCall[2];
 
     const mockResult = { items: { item: [{ contentid: '123' }] } };
-    (service as Record<string, jest.Mock>)['areaBasedList2'].mockResolvedValue(
-      mockResult,
-    );
+    koreanService['areaBasedList2'].mockResolvedValue(mockResult);
 
     const result = (await handler({ areaCode: '1' })) as {
       content: Array<{ type: string; text: string }>;
@@ -60,7 +90,9 @@ describe('registerAll()', () => {
   });
 
   it('KtoApiError 발생 시 MCP 오류 응답을 반환한다', async () => {
-    registerAll(mcpServer, service);
+    registerAll(mcpServer, [
+      { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanService },
+    ]);
 
     const firstCall = (mcpServer.registerTool as jest.Mock).mock.calls[0] as [
       string,
@@ -69,7 +101,7 @@ describe('registerAll()', () => {
     ];
     const handler = firstCall[2];
 
-    (service as Record<string, jest.Mock>)['areaBasedList2'].mockRejectedValue(
+    koreanService['areaBasedList2'].mockRejectedValue(
       new KtoApiError('30', 400, '서비스 키 미등록', true),
     );
 
@@ -84,7 +116,9 @@ describe('registerAll()', () => {
   });
 
   it('KtoValidationError 발생 시 MCP 오류 응답을 반환한다', async () => {
-    registerAll(mcpServer, service);
+    registerAll(mcpServer, [
+      { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanService },
+    ]);
 
     // detailCommon2 도구 (contentId 필수) 핸들러 추출
     const detailCommonCall = (
@@ -105,7 +139,9 @@ describe('registerAll()', () => {
   });
 
   it('서비스가 KtoValidationError를 throw하면 MCP 오류 응답을 반환한다', async () => {
-    registerAll(mcpServer, service);
+    registerAll(mcpServer, [
+      { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanService },
+    ]);
 
     const firstCall = (mcpServer.registerTool as jest.Mock).mock.calls[0] as [
       string,
@@ -114,7 +150,7 @@ describe('registerAll()', () => {
     ];
     const handler = firstCall[2];
 
-    (service as Record<string, jest.Mock>)['areaBasedList2'].mockRejectedValue(
+    koreanService['areaBasedList2'].mockRejectedValue(
       new KtoValidationError('서비스 검증 오류', ['field']),
     );
 
@@ -128,7 +164,9 @@ describe('registerAll()', () => {
   });
 
   it('일반 Error 발생 시 MCP 오류 응답을 반환한다', async () => {
-    registerAll(mcpServer, service);
+    registerAll(mcpServer, [
+      { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanService },
+    ]);
 
     const firstCall = (mcpServer.registerTool as jest.Mock).mock.calls[0] as [
       string,
@@ -137,7 +175,7 @@ describe('registerAll()', () => {
     ];
     const handler = firstCall[2];
 
-    (service as Record<string, jest.Mock>)['areaBasedList2'].mockRejectedValue(
+    koreanService['areaBasedList2'].mockRejectedValue(
       new Error('예기치 않은 오류'),
     );
 
@@ -148,5 +186,52 @@ describe('registerAll()', () => {
 
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('예기치 않은 오류');
+  });
+
+  describe('BARRIER_FREE_TOUR_INFO_TOOLS 검증', () => {
+    it('코드 조회 도구 4개가 포함되지 않는다 (R1: 중복 등록 금지)', () => {
+      const names = BARRIER_FREE_TOUR_INFO_TOOLS.map((t) => t.name);
+      expect(names).not.toContain('kto_barrier_free_areaCode2');
+      expect(names).not.toContain('kto_barrier_free_categoryCode2');
+      expect(names).not.toContain('kto_barrier_free_ldongCode2');
+      expect(names).not.toContain('kto_barrier_free_lclsSystmCode2');
+    });
+
+    it('detailWithTour2가 포함된다', () => {
+      const names = BARRIER_FREE_TOUR_INFO_TOOLS.map((t) => t.name);
+      expect(names).toContain('kto_barrier_free_detailWithTour2');
+    });
+
+    it('무장애 도구의 description에 무장애 의도가 명시된다', () => {
+      for (const tool of BARRIER_FREE_TOUR_INFO_TOOLS) {
+        expect(tool.description).toMatch(/무장애|barrier.free/i);
+      }
+    });
+
+    it('무장애 detailWithTour2 핸들러가 contentId 누락 시 오류를 반환한다', async () => {
+      registerAll(mcpServer, [
+        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+      ]);
+
+      const detailWithTourCall = (
+        mcpServer.registerTool as jest.Mock
+      ).mock.calls.find(
+        (call: unknown[]) => call[0] === 'kto_barrier_free_detailWithTour2',
+      ) as [
+        string,
+        unknown,
+        (args: Record<string, unknown>) => Promise<unknown>,
+      ];
+      const handler = detailWithTourCall[2];
+
+      const result = (await handler({})) as {
+        isError: boolean;
+        content: Array<{ type: string; text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain('contentId');
+      expect(barrierFreeService['detailWithTour2']).not.toHaveBeenCalled();
+    });
   });
 });
