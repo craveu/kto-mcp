@@ -1,0 +1,27 @@
+## SPEC-KTO-001 Progress
+
+- Started: 2026-05-09
+- Branch: feat/SPEC-KTO-001-korean-tour-info
+- Mode: TDD (RED-GREEN-REFACTOR)
+- Harness: standard
+- Language skill: moai-lang-typescript
+- Phase 0.9 complete: TypeScript detected
+- Phase 0.95 complete: Standard Mode (~25 files, single domain)
+- Phase 1 complete: Plan approved (using existing plan.md decomposition)
+- Phase 2B (1/2) complete: Phases 1+2+3 implemented
+  - Files created: 31
+  - Test files: 8, all passing (54 tests)
+  - Coverage: 88.14% statements, 73.61% branches, 94.54% functions, 88.84% lines
+  - New deps: @modelcontextprotocol/sdk ^1.0.0, axios ^1.7.0, class-validator ^0.14.0, class-transformer ^0.5.1, fast-xml-parser ^4.4.0 (deps); nock ^14.0.0 (devDep)
+  - Lint: 0 errors, 1 warning (pre-existing main.ts)
+- Phase 2B (2/2) complete: Phases 4+5+6 implemented
+  - Files created: ~13 (tool-registry, 3 transports + specs, main.ts rewrite, e2e)
+  - Total tests: 76 unit + 6 e2e = 82, all passing
+  - Coverage: 95.41% statements, 95.08% lines
+  - Lint: 0 errors
+  - Build: success (nest build → dist/)
+- Phase 2.5 complete: TRUST 5 audit PASS (all 5 dimensions)
+- Phase 3: feature branch commits
+  - cf25f77 chore: MoAI scaffolding (main)
+  - fee6966 feat(spec): SPEC-KTO-001 (feat branch)
+  - 8b04aeb feat(kto-mcp): implement SPEC-KTO-001 phases 4-6 [includes phases 1-3]

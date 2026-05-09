@@ -31,14 +31,12 @@ kto-mcp/
 │   │
 │   ├── kto/                              # KTO API 통합 계층
 │   │   ├── kto.module.ts                 # KTO 모듈 정의
+│   │   ├── kto-http.client.ts            # 공용 KTO HTTP 클라이언트
+│   │   │                                 # - 서비스 키 관리, baseURL 파라미터화
+│   │   │                                 # - language 파라미터 주입 가능, XML/JSON 응답 파싱
+│   │   │                                 # - 지수 백오프 재시도 (3회, base 500ms)
+│   │   ├── kto-http.client.spec.ts       # HTTP 클라이언트 단위 테스트
 │   │   │
-│   │   ├── clients/                      # HTTP 클라이언트
-│   │   │   ├── kto-http.client.ts        # 공용 KTO HTTP 클라이언트
-│   │   │   │                             # - 서비스 키 관리
-│   │   │   │                             # - baseURL 및 API 파라미터화
-│   │   │   │                             # - language 파라미터 주입 가능
-│   │   │   │                             # - XML/JSON 응답 파싱
-│   │   │   └── kto-http.client.spec.ts
 │   │   │
 │   │   ├── common/                       # 다국어 확장 시 공유될 요소
 │   │   │   ├── dto/                      # Data Transfer Objects
@@ -131,12 +129,15 @@ kto-mcp/
 
 ## 다국어 확장 설계
 
-### 이 이터레이션 (국문만)
+### 이 이터레이션 (국문만) — 실제 구현
+
+**참고**: SPEC-KTO-001 plan.md §10 에 따라 `kto-http.client.ts` 는 `src/kto/clients/` 서브디렉토리가 아닌 `src/kto/` 플랫 레벨에 배치되었습니다.
+
 ```
 kto/
-├── common/           # 모든 언어에서 공유
-├── korean-tour-info/ # 국문 API (15101578)
-└── clients/kto-http.client.ts # language 파라미터 미리 준비
+├── kto-http.client.ts        # language 파라미터 미리 준비
+├── common/                   # 모든 언어에서 공유
+├── korean-tour-info/         # 국문 API (15101578)
 ```
 
 ### 2차+ 이터레이션 (다국어 추가)
@@ -183,7 +184,7 @@ export class AppModule {}
 ```typescript
 // korean-tour-info/korean-tour-info.service.ts
 import { TourInfoDto, AccommodationDto } from '../common/dto';
-import { KTOHttpClient } from '../clients/kto-http.client';
+import { KTOHttpClient } from '../kto-http.client';  // 플랫 레벨에서 임포트
 ```
 
 ### 유틸 임포트
