@@ -5,6 +5,7 @@ import { KoreanTourInfoModule } from './kto/korean-tour-info/korean-tour-info.mo
 import { BarrierFreeTourInfoModule } from './kto/barrier-free-tour-info/barrier-free-tour-info.module';
 import { PhotoGalleryModule } from './kto/photo-gallery/photo-gallery.module';
 import { GoCampingModule } from './kto/go-camping/go-camping.module';
+import { AudioGuideModule } from './kto/audio-guide/audio-guide.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { GoCampingModule } from './kto/go-camping/go-camping.module';
     BarrierFreeTourInfoModule,
     PhotoGalleryModule,
     GoCampingModule,
+    AudioGuideModule,
   ],
 })
 export class AppModule {}

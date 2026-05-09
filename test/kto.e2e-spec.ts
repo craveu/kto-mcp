@@ -36,6 +36,8 @@ import { PhotoGalleryService } from '../src/kto/photo-gallery/photo-gallery.serv
 import { PHOTO_GALLERY_TOOLS } from '../src/kto/photo-gallery/photo-gallery.tools';
 import { GoCampingService } from '../src/kto/go-camping/go-camping.service';
 import { GO_CAMPING_TOOLS } from '../src/kto/go-camping/go-camping.tools';
+import { AudioGuideService } from '../src/kto/audio-guide/audio-guide.service';
+import { ODII_TOOLS } from '../src/kto/audio-guide/audio-guide.tools';
 
 /** HTTP POST 요청 헬퍼 */
 function httpPost(
@@ -142,6 +144,7 @@ describe('KTO MCP E2E', () => {
   let barrierFreeService: BarrierFreeTourInfoService;
   let photoGalleryService: PhotoGalleryService;
   let goCampingService: GoCampingService;
+  let audioGuideService: AudioGuideService;
 
   beforeAll(async () => {
     appContext = await NestFactory.createApplicationContext(AppModule, {
@@ -151,6 +154,7 @@ describe('KTO MCP E2E', () => {
     barrierFreeService = appContext.get(BarrierFreeTourInfoService);
     photoGalleryService = appContext.get(PhotoGalleryService);
     goCampingService = appContext.get(GoCampingService);
+    audioGuideService = appContext.get(AudioGuideService);
   });
 
   afterAll(async () => {
@@ -158,7 +162,7 @@ describe('KTO MCP E2E', () => {
   });
 
   describe('도구 등록 검증', () => {
-    it('McpServer에 34개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개)가 모두 등록된다 (acceptance criterion 1)', () => {
+    it('McpServer에 42개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개)가 모두 등록된다 (acceptance criterion 1)', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test',
         version: '0.1.0',
@@ -168,15 +172,16 @@ describe('KTO MCP E2E', () => {
         { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
         { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
         { tools: GO_CAMPING_TOOLS, service: goCampingService },
+        { tools: ODII_TOOLS, service: audioGuideService },
       ]);
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
       };
-      expect(Object.keys(server._registeredTools).length).toBe(34);
+      expect(Object.keys(server._registeredTools).length).toBe(42);
     });
 
-    it('kto_korean_* 도구 15개와 kto_barrier_free_* 도구 10개와 kto_photo_* 도구와 kto_camping_* 도구가 모두 포함된다', () => {
+    it('kto_korean_* 15 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 도구가 모두 포함된다', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test-2',
         version: '0.1.0',
@@ -186,6 +191,7 @@ describe('KTO MCP E2E', () => {
         { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
         { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
         { tools: GO_CAMPING_TOOLS, service: goCampingService },
+        { tools: ODII_TOOLS, service: audioGuideService },
       ]);
 
       const server = mcpServer as unknown as {
@@ -205,6 +211,9 @@ describe('KTO MCP E2E', () => {
       for (const expectedTool of GO_CAMPING_TOOLS) {
         expect(registeredNames).toContain(expectedTool.name);
       }
+      for (const expectedTool of ODII_TOOLS) {
+        expect(registeredNames).toContain(expectedTool.name);
+      }
       // 필수 도구 개별 확인
       expect(registeredNames).toContain('kto_barrier_free_detailWithTour2');
       expect(registeredNames).toContain('kto_photo_galleryList1');
@@ -217,6 +226,109 @@ describe('KTO MCP E2E', () => {
       expect(registeredNames).toContain('kto_camping_locationBasedList');
       expect(registeredNames).toContain('kto_camping_searchList');
       expect(registeredNames).toContain('kto_camping_imageList');
+      // 오디오 가이드 도구 개별 확인 (kto_audio_* 8개)
+      expect(registeredNames).toContain('kto_audio_storyBasedList');
+      expect(registeredNames).toContain('kto_audio_storyBasedSyncList');
+      expect(registeredNames).toContain('kto_audio_storyLocationBasedList');
+      expect(registeredNames).toContain('kto_audio_storySearchList');
+      expect(registeredNames).toContain('kto_audio_themeBasedList');
+      expect(registeredNames).toContain('kto_audio_themeBasedSyncList');
+      expect(registeredNames).toContain('kto_audio_themeLocationBasedList');
+      expect(registeredNames).toContain('kto_audio_themeSearchList');
+    });
+
+    it('kto_audio_* 도구가 정확히 8개여야 한다 (SPEC-KTO-005 Scenario 2)', () => {
+      const mcpServer = new McpServer({
+        name: 'kto-mcp-audio-count-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServer, [
+        { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
+        { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
+        { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+        { tools: GO_CAMPING_TOOLS, service: goCampingService },
+        { tools: ODII_TOOLS, service: audioGuideService },
+      ]);
+
+      const server = mcpServer as unknown as {
+        _registeredTools: Record<string, unknown>;
+      };
+      const audioTools = Object.keys(server._registeredTools).filter((name) =>
+        name.startsWith('kto_audio_'),
+      );
+      expect(audioTools).toHaveLength(8);
+    });
+
+    it('kto_audio_storyLocationBasedList: langCode만 전달 시 MCP 오류를 반환한다 (REQ-UNW-001, Scenario 4)', async () => {
+      const mockAudioService = {
+        storyLocationBasedList: jest
+          .fn()
+          .mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as AudioGuideService;
+
+      const mcpServer2 = new McpServer({
+        name: 'kto-mcp-audio-dto-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServer2, [
+        { tools: ODII_TOOLS, service: mockAudioService },
+      ]);
+
+      const internalServer = mcpServer2 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_audio_storyLocationBasedList'];
+      expect(toolEntry).toBeDefined();
+
+      // langCode만 전달, mapX/mapY/radius 누락
+      const result = (await toolEntry.handler({ langCode: 'ko' })) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockAudioService.storyLocationBasedList).not.toHaveBeenCalled();
+    });
+
+    it('kto_audio_themeSearchList: langCode만 전달 시 MCP 오류를 반환한다 (REQ-UNW-001, Scenario 5)', async () => {
+      const mockAudioService = {
+        themeSearchList: jest
+          .fn()
+          .mockRejectedValue(new Error('SHOULD_NOT_CALL')),
+      } as unknown as AudioGuideService;
+
+      const mcpServer3 = new McpServer({
+        name: 'kto-mcp-audio-theme-search-test',
+        version: '0.1.0',
+      });
+      registerAll(mcpServer3, [
+        { tools: ODII_TOOLS, service: mockAudioService },
+      ]);
+
+      const internalServer = mcpServer3 as unknown as {
+        _registeredTools: Record<
+          string,
+          { handler: (args: Record<string, unknown>) => Promise<unknown> }
+        >;
+      };
+      const toolEntry =
+        internalServer._registeredTools['kto_audio_themeSearchList'];
+      expect(toolEntry).toBeDefined();
+
+      // langCode만 전달, keyword 누락
+      const result = (await toolEntry.handler({ langCode: 'ko' })) as {
+        isError?: boolean;
+        content?: Array<{ text: string }>;
+      };
+
+      expect(result.isError).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockAudioService.themeSearchList).not.toHaveBeenCalled();
     });
 
     it('kto_photo_galleryDetailList1 호출 시 galContentId 누락이면 outbound 없이 검증 에러를 반환한다 (REQ-UNW-001)', async () => {
