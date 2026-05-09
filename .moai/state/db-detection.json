@@ -1,0 +1,8 @@
+{
+  "detected": false,
+  "matched_keywords": ["redis"],
+  "source_files": [".moai/project/tech.md"],
+  "scanned_at": "2026-05-09T00:00:00Z",
+  "tech_md_hash": "ba0df55b93c46cf9de828e3e661f4ed7d05e384c4a986d3cdfb6468422c8d13a",
+  "notes": "redis는 tech.md TBD 섹션의 향후 캐시 옵션 멘션. 실제 의존성·ORM 없음 → detected=false."
+}
