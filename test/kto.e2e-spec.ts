@@ -34,6 +34,8 @@ import { BarrierFreeTourInfoService } from '../src/kto/barrier-free-tour-info/ba
 import { BARRIER_FREE_TOUR_INFO_TOOLS } from '../src/kto/barrier-free-tour-info/barrier-free-tour-info.tools';
 import { PhotoGalleryService } from '../src/kto/photo-gallery/photo-gallery.service';
 import { PHOTO_GALLERY_TOOLS } from '../src/kto/photo-gallery/photo-gallery.tools';
+import { GoCampingService } from '../src/kto/go-camping/go-camping.service';
+import { GO_CAMPING_TOOLS } from '../src/kto/go-camping/go-camping.tools';
 
 /** HTTP POST 요청 헬퍼 */
 function httpPost(
@@ -139,6 +141,7 @@ describe('KTO MCP E2E', () => {
   let service: KoreanTourInfoService;
   let barrierFreeService: BarrierFreeTourInfoService;
   let photoGalleryService: PhotoGalleryService;
+  let goCampingService: GoCampingService;
 
   beforeAll(async () => {
     appContext = await NestFactory.createApplicationContext(AppModule, {
@@ -147,6 +150,7 @@ describe('KTO MCP E2E', () => {
     service = appContext.get(KoreanTourInfoService);
     barrierFreeService = appContext.get(BarrierFreeTourInfoService);
     photoGalleryService = appContext.get(PhotoGalleryService);
+    goCampingService = appContext.get(GoCampingService);
   });
 
   afterAll(async () => {
@@ -154,7 +158,7 @@ describe('KTO MCP E2E', () => {
   });
 
   describe('도구 등록 검증', () => {
-    it('McpServer에 29개 이상 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 이상)가 모두 등록된다 (acceptance criterion 1)', () => {
+    it('McpServer에 34개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개)가 모두 등록된다 (acceptance criterion 1)', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test',
         version: '0.1.0',
@@ -163,17 +167,16 @@ describe('KTO MCP E2E', () => {
         { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
         { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
         { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+        { tools: GO_CAMPING_TOOLS, service: goCampingService },
       ]);
 
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
       };
-      expect(
-        Object.keys(server._registeredTools).length,
-      ).toBeGreaterThanOrEqual(29);
+      expect(Object.keys(server._registeredTools).length).toBe(34);
     });
 
-    it('kto_korean_* 도구 15개와 kto_barrier_free_* 도구 10개와 kto_photo_* 도구가 모두 포함된다', () => {
+    it('kto_korean_* 도구 15개와 kto_barrier_free_* 도구 10개와 kto_photo_* 도구와 kto_camping_* 도구가 모두 포함된다', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test-2',
         version: '0.1.0',
@@ -182,6 +185,7 @@ describe('KTO MCP E2E', () => {
         { tools: KOREAN_TOUR_INFO_TOOLS, service: service },
         { tools: BARRIER_FREE_TOUR_INFO_TOOLS, service: barrierFreeService },
         { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+        { tools: GO_CAMPING_TOOLS, service: goCampingService },
       ]);
 
       const server = mcpServer as unknown as {
@@ -198,12 +202,21 @@ describe('KTO MCP E2E', () => {
       for (const expectedTool of PHOTO_GALLERY_TOOLS) {
         expect(registeredNames).toContain(expectedTool.name);
       }
+      for (const expectedTool of GO_CAMPING_TOOLS) {
+        expect(registeredNames).toContain(expectedTool.name);
+      }
       // 필수 도구 개별 확인
       expect(registeredNames).toContain('kto_barrier_free_detailWithTour2');
       expect(registeredNames).toContain('kto_photo_galleryList1');
       expect(registeredNames).toContain('kto_photo_galleryDetailList1');
       expect(registeredNames).toContain('kto_photo_gallerySearchList1');
       expect(registeredNames).toContain('kto_photo_gallerySyncDetailList1');
+      // 고캠핑 도구 개별 확인
+      expect(registeredNames).toContain('kto_camping_basedList');
+      expect(registeredNames).toContain('kto_camping_basedSyncList');
+      expect(registeredNames).toContain('kto_camping_locationBasedList');
+      expect(registeredNames).toContain('kto_camping_searchList');
+      expect(registeredNames).toContain('kto_camping_imageList');
     });
 
     it('kto_photo_galleryDetailList1 호출 시 galContentId 누락이면 outbound 없이 검증 에러를 반환한다 (REQ-UNW-001)', async () => {

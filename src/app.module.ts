@@ -4,6 +4,7 @@ import { KtoModule } from './kto/kto.module';
 import { KoreanTourInfoModule } from './kto/korean-tour-info/korean-tour-info.module';
 import { BarrierFreeTourInfoModule } from './kto/barrier-free-tour-info/barrier-free-tour-info.module';
 import { PhotoGalleryModule } from './kto/photo-gallery/photo-gallery.module';
+import { GoCampingModule } from './kto/go-camping/go-camping.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PhotoGalleryModule } from './kto/photo-gallery/photo-gallery.module';
     KoreanTourInfoModule,
     BarrierFreeTourInfoModule,
     PhotoGalleryModule,
+    GoCampingModule,
   ],
 })
 export class AppModule {}

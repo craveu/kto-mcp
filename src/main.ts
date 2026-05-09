@@ -9,6 +9,8 @@ import { BarrierFreeTourInfoService } from './kto/barrier-free-tour-info/barrier
 import { BARRIER_FREE_TOUR_INFO_TOOLS } from './kto/barrier-free-tour-info/barrier-free-tour-info.tools';
 import { PhotoGalleryService } from './kto/photo-gallery/photo-gallery.service';
 import { PHOTO_GALLERY_TOOLS } from './kto/photo-gallery/photo-gallery.tools';
+import { GoCampingService } from './kto/go-camping/go-camping.service';
+import { GO_CAMPING_TOOLS } from './kto/go-camping/go-camping.tools';
 import { StdioTransportAdapter } from './mcp/transports/stdio.adapter';
 import { HttpStreamableTransportAdapter } from './mcp/transports/http-streamable.adapter';
 import { HttpTransportAdapter } from './mcp/transports/http.adapter';
@@ -28,10 +30,11 @@ async function bootstrap() {
     version: '0.1.0',
   });
 
-  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001, SPEC-KTO-003 REQ-KTO3-001)
+  // 도구 등록 (REQ-KTO-005, REQ-KTO-006, SPEC-KTO-002 REQ-KTO2-001, SPEC-KTO-003 REQ-KTO3-001, SPEC-KTO-004 REQ-KTO4-001)
   const koreanTourInfoService = app.get(KoreanTourInfoService);
   const barrierFreeTourInfoService = app.get(BarrierFreeTourInfoService);
   const photoGalleryService = app.get(PhotoGalleryService);
+  const goCampingService = app.get(GoCampingService);
   registerAll(mcpServer, [
     { tools: KOREAN_TOUR_INFO_TOOLS, service: koreanTourInfoService },
     {
@@ -39,6 +42,7 @@ async function bootstrap() {
       service: barrierFreeTourInfoService,
     },
     { tools: PHOTO_GALLERY_TOOLS, service: photoGalleryService },
+    { tools: GO_CAMPING_TOOLS, service: goCampingService },
   ]);
 
   // transport 선택 및 시작 (REQ-KTO-002)
