@@ -10,7 +10,9 @@ import { STDIO_SESSION_ID } from '../session-credentials.store';
 /**
  * stdio transport 어댑터.
  * stdin/stdout을 통해 MCP 클라이언트와 통신한다.
- * SPEC-KTO-011: start() 시 env 기반 credentials를 __stdio_default__ sessionId로 store에 등록.
+ * SPEC-KTO-011: start() 시 env 기반 credentials가 제공되면 __stdio_default__ sessionId로 store에 등록.
+ * credentials가 없거나 serviceKey가 빈 문자열이면 register를 건너뛴다 — 도구 호출 시점에
+ * tool-registry가 KtoServiceKeyMissingError로 응답한다.
  * HTTP 헤더 처리 로직 없음 (backward compat).
  */
 @Injectable()
@@ -21,12 +23,17 @@ export class StdioTransportAdapter {
 
   /**
    * StdioServerTransport를 생성하고 McpServer에 연결한다.
-   * credentials를 __stdio_default__ sessionId로 store에 등록한다.
+   * credentials가 유효하면 __stdio_default__ sessionId로 store에 등록한다.
    */
-  async start(server: McpServer, credentials: KtoCredentials): Promise<void> {
-    // stdio 전용 고정 sessionId로 env 기반 creds 등록
-    // tool-registry가 extra.sessionId=undefined 시 STDIO_SESSION_ID로 fallback
-    this.store.register(STDIO_SESSION_ID, credentials);
+  async start(
+    server: McpServer,
+    credentials?: KtoCredentials,
+  ): Promise<void> {
+    if (credentials && credentials.serviceKey !== '') {
+      // stdio 전용 고정 sessionId로 env 기반 creds 등록
+      // tool-registry가 extra.sessionId=undefined 시 STDIO_SESSION_ID로 fallback
+      this.store.register(STDIO_SESSION_ID, credentials);
+    }
 
     this.transport = new StdioServerTransport();
     await server.connect(this.transport);

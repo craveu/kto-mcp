@@ -1,0 +1,17 @@
+node_modules
+dist
+coverage
+.git
+.idea
+.moai
+.moai-backups
+.claude
+test
+**/*.spec.ts
+**/*.test.ts
+.env
+.env.*
+!.env.example
+README.md
+CLAUDE.md
+*.log

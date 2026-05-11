@@ -30,8 +30,16 @@ import { HttpTransportAdapter } from './mcp/transports/http.adapter';
 import { SessionCredentialsStore } from './mcp/session-credentials.store';
 
 async function bootstrap() {
-  // REQ-KTO-007: 환경변수 로드 — stdio 모드에서만 KTO_SERVICE_KEY 필수 (SPEC-KTO-011)
+  // REQ-KTO-007: 환경변수 로드 — KTO_SERVICE_KEY는 모든 모드에서 선택 (SPEC-KTO-011)
   const env = getEnv();
+
+  if (env.mcpTransportMode === 'stdio' && !env.ktoServiceKey) {
+    console.error(
+      '[kto-mcp] 경고: KTO_SERVICE_KEY가 설정되지 않았습니다. ' +
+        'stdio 모드에서 도구 호출 시 missing-key 에러로 실패합니다. ' +
+        'data.go.kr 서비스 키를 KTO_SERVICE_KEY 환경변수에 설정하세요.',
+    );
+  }
 
   // NestJS 애플리케이션 컨텍스트 생성 (HTTP 서버 미기동)
   const app = await NestFactory.createApplicationContext(AppModule, {
@@ -83,11 +91,17 @@ async function bootstrap() {
     const mcpServer = new McpServer({ name: 'kto-mcp', version: '0.1.0' });
     registerAll(mcpServer, registries, store);
     const stdioAdapter = app.get(StdioTransportAdapter);
-    // SPEC-KTO-011: stdio 부트 시 env 기반 creds를 __stdio_default__로 store에 등록
-    await stdioAdapter.start(mcpServer, {
-      serviceKey: env.ktoServiceKey,
-      preencoded: env.ktoServiceKeyPreencoded,
-    });
+    // SPEC-KTO-011: env 기반 creds가 있으면 __stdio_default__로 등록.
+    // 키가 비어 있으면 register를 건너뛰고 도구 호출 시 missing-key로 실패한다.
+    await stdioAdapter.start(
+      mcpServer,
+      env.ktoServiceKey
+        ? {
+            serviceKey: env.ktoServiceKey,
+            preencoded: env.ktoServiceKeyPreencoded,
+          }
+        : undefined,
+    );
     adapter = stdioAdapter;
   } else if (mode === 'http-streamable') {
     // HTTP: 세션별 McpServer 팩토리 — registries를 어댑터에 전달
