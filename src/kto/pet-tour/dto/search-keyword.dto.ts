@@ -23,15 +23,15 @@ export class PtSearchKeywordDto {
   @IsString()
   contentTypeId?: string;
 
-  /** 지역 코드 */
+  /** 법정동 지역 코드 */
   @IsOptional()
   @IsString()
-  areaCode?: string;
+  lDongRegnCd?: string;
 
-  /** 시군구 코드 */
+  /** 법정동 시군구 코드 */
   @IsOptional()
   @IsString()
-  sigunguCode?: string;
+  lDongSignguCd?: string;
 
   /** 정렬 코드 */
   @IsOptional()

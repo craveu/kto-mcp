@@ -18,25 +18,15 @@ export class MtAreaBasedListDto {
   @IsString()
   langDivCd!: string;
 
-  /** 시군구 코드 */
+  /** 법정동 지역 코드 */
   @IsOptional()
   @IsString()
-  sigunguCode?: string;
+  lDongRegnCd?: string;
 
-  /** 대분류 코드 */
+  /** 법정동 시군구 코드 */
   @IsOptional()
   @IsString()
-  cat1?: string;
-
-  /** 중분류 코드 */
-  @IsOptional()
-  @IsString()
-  cat2?: string;
-
-  /** 소분류 코드 */
-  @IsOptional()
-  @IsString()
-  cat3?: string;
+  lDongSignguCd?: string;
 
   /** 정렬 코드 (A=제목순, C=수정일순, D=생성일순) */
   @IsOptional()

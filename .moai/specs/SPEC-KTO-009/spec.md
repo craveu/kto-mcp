@@ -1,9 +1,9 @@
 ---
 id: SPEC-KTO-009
-version: 1.0.0
+version: 1.1.0
 status: completed
 created: 2026-05-09
-updated: 2026-05-09
+updated: 2026-05-12
 author: Seonho Kim
 priority: high
 issue_number: 0
@@ -15,6 +15,7 @@ issue_number: 0
 
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
+| 1.1.0 | 2026-05-12 | Seonho Kim | 레거시 파라미터 제거: `sigunguCode`/`areaCode`/`cat1`/`cat2`/`cat3` → `lDongRegnCd`/`lDongSignguCd` 교체 (areaBasedList, searchKeyword DTO + tools inputSchema) |
 | 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료, 실 키 스모크 검증 통과, main 머지 완료 |
 | 0.1.0 | 2026-05-09 | Seonho Kim | 최초 SPEC 작성. SPEC-KTO-001~008 머지 완료된 main 브랜치 위에 KTO 6번째 패턴 (langDivCd) 의 두 번째 적용 사례로서 웰니스관광 정보 API 통합. 9 operation 중 8개 노출. |
 

@@ -6,35 +6,35 @@ import { Type } from 'class-transformer';
  * 모든 파라미터 선택 사항 (필수 파라미터 없음).
  */
 export class PtAreaBasedListDto {
-  /** 지역 코드 */
+  /** 법정동 지역 코드 */
   @IsOptional()
   @IsString()
-  areaCode?: string;
+  lDongRegnCd?: string;
 
-  /** 시군구 코드 */
+  /** 법정동 시군구 코드 */
   @IsOptional()
   @IsString()
-  sigunguCode?: string;
+  lDongSignguCd?: string;
 
   /** 관광타입 ID */
   @IsOptional()
   @IsString()
   contentTypeId?: string;
 
-  /** 대분류 코드 */
+  /** 분류체계 1단계 */
   @IsOptional()
   @IsString()
-  cat1?: string;
+  lclsSystm1?: string;
 
-  /** 중분류 코드 */
+  /** 분류체계 2단계 */
   @IsOptional()
   @IsString()
-  cat2?: string;
+  lclsSystm2?: string;
 
-  /** 소분류 코드 */
+  /** 분류체계 3단계 */
   @IsOptional()
   @IsString()
-  cat3?: string;
+  lclsSystm3?: string;
 
   /** 정렬 코드 (A=제목순, C=수정일순, D=생성일순, E=거리순) */
   @IsOptional()

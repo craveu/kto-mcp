@@ -36,21 +36,13 @@ export const MEDICAL_TOURISM_TOOLS: McpToolDefinition[] = [
           type: 'string',
           description: LANG_DIV_CD_DESCRIPTION,
         },
-        sigunguCode: {
+        lDongRegnCd: {
           type: 'string',
-          description: '시군구 코드',
+          description: '법정동 지역 코드',
         },
-        cat1: {
+        lDongSignguCd: {
           type: 'string',
-          description: '대분류 코드',
-        },
-        cat2: {
-          type: 'string',
-          description: '중분류 코드',
-        },
-        cat3: {
-          type: 'string',
-          description: '소분류 코드',
+          description: '법정동 시군구 코드',
         },
         arrange: {
           type: 'string',
@@ -139,9 +131,13 @@ export const MEDICAL_TOURISM_TOOLS: McpToolDefinition[] = [
           description:
             '검색 키워드 — 필수 (영어 검색어 권장: Rhinoplasty, Dental 등)',
         },
-        sigunguCode: {
+        lDongRegnCd: {
           type: 'string',
-          description: '시군구 코드 (검색 범위 한정)',
+          description: '법정동 지역 코드 (검색 범위 한정)',
+        },
+        lDongSignguCd: {
+          type: 'string',
+          description: '법정동 시군구 코드',
         },
         arrange: {
           type: 'string',

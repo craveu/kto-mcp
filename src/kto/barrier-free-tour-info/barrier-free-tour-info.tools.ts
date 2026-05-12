@@ -28,12 +28,12 @@ export const BARRIER_FREE_TOUR_INFO_TOOLS: McpToolDefinition[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        areaCode: { type: 'string', description: '지역 코드' },
-        sigunguCode: { type: 'string', description: '시군구 코드' },
+        lDongRegnCd: { type: 'string', description: '법정동 지역 코드' },
+        lDongSignguCd: { type: 'string', description: '법정동 시군구 코드' },
         contentTypeId: { type: 'string', description: '콘텐츠 타입 ID' },
-        cat1: { type: 'string', description: '대분류' },
-        cat2: { type: 'string', description: '중분류' },
-        cat3: { type: 'string', description: '소분류' },
+        lclsSystm1: { type: 'string', description: '분류체계 1단계' },
+        lclsSystm2: { type: 'string', description: '분류체계 2단계' },
+        lclsSystm3: { type: 'string', description: '분류체계 3단계' },
         arrange: {
           type: 'string',
           description:
@@ -92,11 +92,11 @@ export const BARRIER_FREE_TOUR_INFO_TOOLS: McpToolDefinition[] = [
       properties: {
         keyword: { type: 'string', description: '검색 키워드 (필수)' },
         contentTypeId: { type: 'string', description: '콘텐츠 타입 ID' },
-        areaCode: { type: 'string', description: '지역 코드' },
-        sigunguCode: { type: 'string', description: '시군구 코드' },
-        cat1: { type: 'string', description: '대분류' },
-        cat2: { type: 'string', description: '중분류' },
-        cat3: { type: 'string', description: '소분류' },
+        lDongRegnCd: { type: 'string', description: '법정동 지역 코드' },
+        lDongSignguCd: { type: 'string', description: '법정동 시군구 코드' },
+        lclsSystm1: { type: 'string', description: '분류체계 1단계' },
+        lclsSystm2: { type: 'string', description: '분류체계 2단계' },
+        lclsSystm3: { type: 'string', description: '분류체계 3단계' },
         arrange: {
           type: 'string',
           description: '정렬 기준',
@@ -129,8 +129,8 @@ export const BARRIER_FREE_TOUR_INFO_TOOLS: McpToolDefinition[] = [
           type: 'string',
           description: '행사 종료일 (YYYYMMDD)',
         },
-        areaCode: { type: 'string', description: '지역 코드' },
-        sigunguCode: { type: 'string', description: '시군구 코드' },
+        lDongRegnCd: { type: 'string', description: '법정동 지역 코드' },
+        lDongSignguCd: { type: 'string', description: '법정동 시군구 코드' },
         arrange: {
           type: 'string',
           description: '정렬 기준',
@@ -155,8 +155,8 @@ export const BARRIER_FREE_TOUR_INFO_TOOLS: McpToolDefinition[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        areaCode: { type: 'string', description: '지역 코드' },
-        sigunguCode: { type: 'string', description: '시군구 코드' },
+        lDongRegnCd: { type: 'string', description: '법정동 지역 코드' },
+        lDongSignguCd: { type: 'string', description: '법정동 시군구 코드' },
         arrange: {
           type: 'string',
           description: '정렬 기준',

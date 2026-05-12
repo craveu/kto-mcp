@@ -14,9 +14,9 @@ describe('반려동물 동반여행 DTO 검증 (REQ-UNW-001)', () => {
       expect(errors).toHaveLength(0);
     });
 
-    it('유효한 areaCode와 numOfRows는 검증 통과해야 한다', async () => {
+    it('유효한 lDongRegnCd와 numOfRows는 검증 통과해야 한다', async () => {
       const dto = plainToInstance(PtAreaBasedListDto, {
-        areaCode: '1',
+        lDongRegnCd: '11',
         numOfRows: 10,
         pageNo: 1,
       });

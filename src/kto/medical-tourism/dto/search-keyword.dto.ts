@@ -23,10 +23,15 @@ export class MtSearchKeywordDto {
   @IsString()
   keyword!: string;
 
-  /** 시군구 코드 */
+  /** 법정동 지역 코드 */
   @IsOptional()
   @IsString()
-  sigunguCode?: string;
+  lDongRegnCd?: string;
+
+  /** 법정동 시군구 코드 */
+  @IsOptional()
+  @IsString()
+  lDongSignguCd?: string;
 
   /** 정렬 코드 */
   @IsOptional()

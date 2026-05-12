@@ -51,9 +51,9 @@ describe('PET_TOUR_TOOLS', () => {
       expect(props?.['pageNo']).toBeDefined();
     });
 
-    it('inputSchema에 areaCode 필드가 정의되어야 한다', () => {
+    it('inputSchema에 lDongRegnCd 필드가 정의되어야 한다', () => {
       const props = tool?.inputSchema.properties as Record<string, unknown>;
-      expect(props?.['areaCode']).toBeDefined();
+      expect(props?.['lDongRegnCd']).toBeDefined();
     });
   });
 

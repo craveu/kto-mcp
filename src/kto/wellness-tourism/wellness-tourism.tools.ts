@@ -37,25 +37,13 @@ export const WELLNESS_TOURISM_TOOLS: McpToolDefinition[] = [
           type: 'string',
           description: LANG_DIV_CD_DESCRIPTION,
         },
-        sigunguCode: {
+        lDongRegnCd: {
           type: 'string',
-          description: '시군구 코드',
+          description: '법정동 지역 코드',
         },
-        areaCode: {
+        lDongSignguCd: {
           type: 'string',
-          description: '지역 코드',
-        },
-        cat1: {
-          type: 'string',
-          description: '대분류 코드',
-        },
-        cat2: {
-          type: 'string',
-          description: '중분류 코드',
-        },
-        cat3: {
-          type: 'string',
-          description: '소분류 코드',
+          description: '법정동 시군구 코드',
         },
         contentTypeId: {
           type: 'string',
@@ -151,13 +139,13 @@ export const WELLNESS_TOURISM_TOOLS: McpToolDefinition[] = [
           type: 'string',
           description: '검색 키워드 — 필수 (한국어 권장: 온천, 스파, 힐링 등)',
         },
-        sigunguCode: {
+        lDongRegnCd: {
           type: 'string',
-          description: '시군구 코드 (검색 범위 한정)',
+          description: '법정동 지역 코드 (검색 범위 한정)',
         },
-        areaCode: {
+        lDongSignguCd: {
           type: 'string',
-          description: '지역 코드',
+          description: '법정동 시군구 코드',
         },
         contentTypeId: {
           type: 'string',

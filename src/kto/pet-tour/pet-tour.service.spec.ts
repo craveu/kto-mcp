@@ -54,7 +54,7 @@ describe('PetTourService', () => {
 
       const result = await service.areaBasedList2(
         {
-          areaCode: '1',
+          lDongRegnCd: '11',
           numOfRows: 1,
         },
         testCredentials,
@@ -65,7 +65,7 @@ describe('PetTourService', () => {
           service: 'KorPetTourService2',
           operation: 'areaBasedList2',
           params: expect.objectContaining({
-            areaCode: '1',
+            lDongRegnCd: '11',
             numOfRows: 1,
           }) as Record<string, unknown>,
         }),

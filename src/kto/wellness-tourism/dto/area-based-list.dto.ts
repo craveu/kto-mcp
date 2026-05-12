@@ -18,30 +18,15 @@ export class WtAreaBasedListDto {
   @IsString()
   langDivCd!: string;
 
-  /** 시군구 코드 */
+  /** 법정동 지역 코드 */
   @IsOptional()
   @IsString()
-  sigunguCode?: string;
+  lDongRegnCd?: string;
 
-  /** 지역 코드 */
+  /** 법정동 시군구 코드 */
   @IsOptional()
   @IsString()
-  areaCode?: string;
-
-  /** 대분류 코드 */
-  @IsOptional()
-  @IsString()
-  cat1?: string;
-
-  /** 중분류 코드 */
-  @IsOptional()
-  @IsString()
-  cat2?: string;
-
-  /** 소분류 코드 */
-  @IsOptional()
-  @IsString()
-  cat3?: string;
+  lDongSignguCd?: string;
 
   /** 콘텐츠 타입 ID */
   @IsOptional()

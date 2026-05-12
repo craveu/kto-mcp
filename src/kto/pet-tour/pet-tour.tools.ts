@@ -19,34 +19,34 @@ export const PET_TOUR_TOOLS: McpToolDefinition[] = [
     description:
       '반려동물 동반 가능 지역기반 관광정보 목록 (pet-friendly 필터). ' +
       'KorService2의 areaBasedList2에서 반려동물 동반 가능 콘텐츠만 필터링한 결과를 반환한다. ' +
-      "사전 검증: areaCode='1'(서울) → 62 hits. " +
+      "사전 검증: lDongRegnCd='11'(서울) → 62+ hits. " +
       '반려동물 상세 조회는 kto_korean_detailPetTour2 또는 kto_korean_detailCommon2 사용.',
     inputSchema: {
       type: 'object',
       properties: {
-        areaCode: {
+        lDongRegnCd: {
           type: 'string',
-          description: '지역 코드 (1=서울, 2=인천, 6=부산 등)',
+          description: '법정동 지역 코드 (11=서울, 28=인천, 26=부산 등)',
         },
-        sigunguCode: {
+        lDongSignguCd: {
           type: 'string',
-          description: '시군구 코드 (areaCode와 함께 사용)',
+          description: '법정동 시군구 코드 (lDongRegnCd와 함께 사용)',
         },
         contentTypeId: {
           type: 'string',
           description: '관광타입 ID (12=관광지, 14=문화시설, 39=음식점 등)',
         },
-        cat1: {
+        lclsSystm1: {
           type: 'string',
-          description: '대분류 코드',
+          description: '분류체계 1단계',
         },
-        cat2: {
+        lclsSystm2: {
           type: 'string',
-          description: '중분류 코드',
+          description: '분류체계 2단계',
         },
-        cat3: {
+        lclsSystm3: {
           type: 'string',
-          description: '소분류 코드',
+          description: '분류체계 3단계',
         },
         arrange: {
           type: 'string',
@@ -123,7 +123,7 @@ export const PET_TOUR_TOOLS: McpToolDefinition[] = [
       '키워드로 반려동물 동반 가능 관광지 검색 (keyword 필수). ' +
       '입력 키워드로 반려동물 동반 가능 관광지를 전국 검색한다. ' +
       "사전 검증: keyword='카페' → 19 pet-friendly 카페 hits. " +
-      'areaCode로 지역 범위 한정 가능.',
+      'lDongRegnCd로 지역 범위 한정 가능.',
     inputSchema: {
       type: 'object',
       required: ['keyword'],
@@ -136,13 +136,13 @@ export const PET_TOUR_TOOLS: McpToolDefinition[] = [
           type: 'string',
           description: '관광타입 ID',
         },
-        areaCode: {
+        lDongRegnCd: {
           type: 'string',
-          description: '지역 코드 (검색 범위 한정)',
+          description: '법정동 지역 코드 (검색 범위 한정)',
         },
-        sigunguCode: {
+        lDongSignguCd: {
           type: 'string',
-          description: '시군구 코드',
+          description: '법정동 시군구 코드',
         },
         arrange: {
           type: 'string',

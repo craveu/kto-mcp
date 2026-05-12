@@ -46,7 +46,7 @@ describe('무장애 DTO 검증', () => {
 
     it('유효한 arrange 값은 검증 통과해야 한다', async () => {
       const dto = plainToInstance(BfAreaBasedListDto, {
-        areaCode: '1',
+        lDongRegnCd: '11',
         arrange: 'A',
       });
       const errors = await validate(dto);

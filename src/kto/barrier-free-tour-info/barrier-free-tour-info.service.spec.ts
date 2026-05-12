@@ -45,7 +45,7 @@ describe('BarrierFreeTourInfoService', () => {
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
       const result = await service.areaBasedList2(
-        { areaCode: '1' },
+        { lDongRegnCd: '11' },
         testCredentials,
       );
 
@@ -53,7 +53,7 @@ describe('BarrierFreeTourInfoService', () => {
         expect.objectContaining({
           service: 'KorWithService2',
           operation: 'areaBasedList2',
-          params: expect.objectContaining({ areaCode: '1' }) as Record<
+          params: expect.objectContaining({ lDongRegnCd: '11' }) as Record<
             string,
             unknown
           >,

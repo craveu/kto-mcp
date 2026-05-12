@@ -1,9 +1,9 @@
 ---
 id: SPEC-KTO-008
-version: 1.0.0
+version: 1.1.0
 status: completed
 created: 2026-05-09
-updated: 2026-05-09
+updated: 2026-05-12
 author: Seonho Kim
 priority: high
 issue_number: 0
@@ -15,6 +15,7 @@ issue_number: 0
 
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
+| 1.1.0 | 2026-05-12 | Seonho Kim | 레거시 파라미터 제거: `sigunguCode`/`cat1`/`cat2`/`cat3` → `lDongRegnCd`/`lDongSignguCd` 교체 (areaBasedList, searchKeyword DTO + tools inputSchema) |
 | 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료, 실 키 스모크 검증 통과, main 머지 완료 |
 | 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. 한국관광공사 의료관광 정보 API (`MdclTursmService`, data.go.kr ID 15143913) 8 오퍼레이션 중 7을 MCP 도구로 매핑하는 8차 이터레이션 정의. |
 

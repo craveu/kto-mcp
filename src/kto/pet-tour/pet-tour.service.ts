@@ -26,7 +26,7 @@ export class PetTourService {
 
   /**
    * 반려동물 동반 가능 지역기반 관광정보 목록 조회.
-   * 사전 검증: areaCode='1'(서울) → totalCount=62.
+   * 사전 검증: lDongRegnCd='11'(서울) → totalCount=62+.
    */
   async areaBasedList2(
     dto: PtAreaBasedListDto,
