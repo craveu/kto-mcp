@@ -2,7 +2,7 @@
 
 한국관광공사(KTO)의 공공 데이터 10개 API를 LLM 에이전트가 자연어로 조회할 수 있도록 통합한 MCP(Model Context Protocol) 서버입니다.
 
-**현황 (10/10 완성)**: 65개 MCP 도구 노출, 7가지 KTO 다국어 처리 패턴 완벽 흡수, 693 unit + 30 e2e 테스트 통과, 89% 커버리지.
+**현황 (10/10 완성)**: 63개 MCP 도구 노출, 7가지 KTO 다국어 처리 패턴 완벽 흡수, 89% 커버리지.
 
 ## 요구사항
 
@@ -80,15 +80,13 @@ MCP_TRANSPORT_MODE=stdio node dist/main.js
 }
 ```
 
-## 노출되는 65개 MCP 도구 카탈로그
+## 노출되는 63개 MCP 도구 카탈로그
 
 10개 API 통합, prefix별 도구 분류:
 
-### kto_korean_* (15개) — 국문 관광정보 조회 (SPEC-KTO-001, KorService2)
+### kto_korean_* (13개) — 국문 관광정보 조회 (SPEC-KTO-001, KorService2)
 - kto_korean_areaBasedList2 — 지역기반 관광정보 목록 조회
 - kto_korean_areaBasedSyncList2 — 지역기반 관광정보 동기화 목록
-- kto_korean_areaCode2 — 지역 코드 조회
-- kto_korean_categoryCode2 — 분류 코드 조회
 - kto_korean_detailCommon2 — 공통 상세정보 조회
 - kto_korean_detailImage2 — 이미지 정보 조회
 - kto_korean_detailInfo2 — 반복 상세정보 조회
@@ -237,7 +235,7 @@ kto-mcp/
 │   ├── kto/                         # KTO API 통합 계층 (10 API modules)
 │   │   ├── kto.module.ts
 │   │   ├── common/                  # 공용: KtoHttpClient, BASE_URL_MAP, error, normalizer
-│   │   ├── korean-tour-info/        # KTO-001 국문 관광정보 (15 도구)
+│   │   ├── korean-tour-info/        # KTO-001 국문 관광정보 (13 도구)
 │   │   ├── barrier-free-tour-info/  # KTO-002 무장애 여행정보 (10 도구)
 │   │   ├── photo-gallery/           # KTO-003 관광사진 (4 도구)
 │   │   ├── go-camping/              # KTO-004 고캠핑 (5 도구)

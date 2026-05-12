@@ -1,8 +1,6 @@
 export { KtoPaginationDto } from './pagination.dto';
 export { AreaBasedListDto } from './area-based-list.dto';
 export { AreaBasedSyncListDto } from './area-based-sync-list.dto';
-export { AreaCodeDto } from './area-code.dto';
-export { CategoryCodeDto } from './category-code.dto';
 export { DetailCommonDto } from './detail-common.dto';
 export { DetailImageDto } from './detail-image.dto';
 export { DetailInfoDto } from './detail-info.dto';

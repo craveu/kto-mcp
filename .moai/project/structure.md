@@ -2,7 +2,7 @@
 
 ## 현재 상태
 
-NestJS 11 + TypeScript 5 기반 MCP 서버 10/10 완성. 65개 MCP 도구 노출, 10개 KTO API 모듈 통합 완료.
+NestJS 11 + TypeScript 5 기반 MCP 서버 10/10 완성. 63개 MCP 도구 노출, 10개 KTO API 모듈 통합 완료.
 
 ---
 
@@ -37,7 +37,7 @@ kto-mcp/
 │   │   │   ├── interfaces/               # KTOClient, KTOService 인터페이스
 │   │   │   ├── errors/                   # KTO API 예외 클래스
 │   │   │   └── utils/                    # XML 파싱, 응답 정규화, 재시도 정책
-│   │   ├── korean-tour-info/             # KTO-001: 국문 관광정보 (15 도구)
+│   │   ├── korean-tour-info/             # KTO-001: 국문 관광정보 (13 도구, v1.1.0)
 │   │   │   ├── korean-tour-info.module.ts
 │   │   │   ├── korean-tour-info.service.ts
 │   │   │   ├── korean-tour-info.tools.ts
@@ -157,7 +157,7 @@ kto-mcp/
 - **공용 KtoHttpClient**: 모든 10개 모듈이 단일 인스턴스 재사용
 - **BASE_URL_MAP**: 10개 API를 키-밸류로 중앙 집중 관리
 - **response-normalizer**: 모든 응답을 일관된 JSON 포맷으로 정규화
-- **tool-registry**: 65개 도구를 동적 등록/해제
+- **tool-registry**: 63개 도구를 동적 등록/해제
 - **transport 계층**: stdio/http-streamable/http-json 3종 공통 사용
 
 ---
@@ -241,4 +241,4 @@ import { mapApiResponseToDto } from '../common/utils/response-mapper.util';
 Version: 2.0.0  
 Last Updated: 2026-05-09  
 Owner: seonho@wantedlab.com
-Status: 10/10 완성, 65개 도구 노출, 7가지 패턴 흡수
+Status: 10/10 완성, 63개 도구 노출, 7가지 패턴 흡수

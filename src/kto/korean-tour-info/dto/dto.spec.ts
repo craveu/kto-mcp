@@ -8,8 +8,6 @@ import {
   SearchFestivalDto,
   KtoPaginationDto,
   DetailCommonDto,
-  AreaCodeDto,
-  CategoryCodeDto,
   DetailImageDto,
   DetailInfoDto,
   DetailIntroDto,
@@ -109,8 +107,6 @@ describe('DTO 인스턴스화 (커버리지)', () => {
   it('모든 DTO를 인스턴스화할 수 있어야 한다', () => {
     expect(new AreaBasedListDto()).toBeDefined();
     expect(new AreaBasedSyncListDto()).toBeDefined();
-    expect(new AreaCodeDto()).toBeDefined();
-    expect(new CategoryCodeDto()).toBeDefined();
     expect(new DetailCommonDto()).toBeDefined();
     expect(new DetailImageDto()).toBeDefined();
     expect(new DetailInfoDto()).toBeDefined();

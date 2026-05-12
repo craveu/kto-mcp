@@ -6,8 +6,6 @@ import type { KtoCredentials } from '../../mcp/session-credentials.store';
 import type {
   AreaBasedListDto,
   AreaBasedSyncListDto,
-  AreaCodeDto,
-  CategoryCodeDto,
   DetailCommonDto,
   DetailImageDto,
   DetailInfoDto,
@@ -53,32 +51,6 @@ export class KoreanTourInfoService {
     return this.httpClient.request({
       service: this.service,
       operation: 'areaBasedSyncList2',
-      params: { ...dto },
-      credentials,
-    });
-  }
-
-  /** 지역 코드 조회 */
-  async areaCode2(
-    dto: AreaCodeDto,
-    credentials: KtoCredentials,
-  ): Promise<KtoListResponse<Record<string, unknown>>> {
-    return this.httpClient.request({
-      service: this.service,
-      operation: 'areaCode2',
-      params: { ...dto },
-      credentials,
-    });
-  }
-
-  /** 서비스 분류 코드 조회 */
-  async categoryCode2(
-    dto: CategoryCodeDto,
-    credentials: KtoCredentials,
-  ): Promise<KtoListResponse<Record<string, unknown>>> {
-    return this.httpClient.request({
-      service: this.service,
-      operation: 'categoryCode2',
       params: { ...dto },
       credentials,
     });

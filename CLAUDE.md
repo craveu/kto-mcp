@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project intent
 
-`kto-mcp` is an MCP (Model Context Protocol) server that wraps Korea Tourism Organization (KTO / 한국관광공사) public APIs from `data.go.kr`. **10 of 10 KTO APIs integrated** (SPEC-KTO-001 ~ SPEC-KTO-010), exposing **65 MCP tools** across 10 prefixes. README and runtime docs are in Korean.
+`kto-mcp` is an MCP (Model Context Protocol) server that wraps Korea Tourism Organization (KTO / 한국관광공사) public APIs from `data.go.kr`. **10 of 10 KTO APIs integrated** (SPEC-KTO-001 ~ SPEC-KTO-010), exposing **63 MCP tools** across 10 prefixes. README and runtime docs are in Korean.
 
 ## Commands
 
@@ -62,7 +62,7 @@ Each module is self-contained with `<module>.service.ts`, `<module>.tools.ts`, `
 
 | Module dir | Service path | Tool prefix | Tools | SPEC |
 |---|---|---|---|---|
-| `korean-tour-info/` | KorService2 | `kto_korean_*` | 15 | KTO-001 |
+| `korean-tour-info/` | KorService2 | `kto_korean_*` | 13 | KTO-001 |
 | `barrier-free-tour-info/` | KorWithService2 | `kto_barrier_free_*` | 10 | KTO-002 |
 | `photo-gallery/` | PhotoGalleryService1 | `kto_photo_*` | 4 | KTO-003 |
 | `go-camping/` | GoCamping | `kto_camping_*` | 5 | KTO-004 |
@@ -73,7 +73,7 @@ Each module is self-contained with `<module>.service.ts`, `<module>.tools.ts`, `
 | `wellness-tourism/` | WellnessTursmService | `kto_wellness_*` | 8 | KTO-009 |
 | `photo-award/` | PhokoAwrdService | `kto_contest_*` | 2 | KTO-010 |
 
-Total: **65 tools**. Per-DTO class-validator does deeper validation after the SDK's Zod first pass.
+Total: **63 tools**. Per-DTO class-validator does deeper validation after the SDK's Zod first pass.
 
 ### KTO multilingual patterns observed
 The 10 KTO APIs use **7 different multilingual handling patterns**. New KTO integrations should identify which pattern via `data.go.kr/<id>/openapi.do` listing scrape + real-key probe before SPEC writing:

@@ -14,7 +14,7 @@ Created/Updated: 2026-05-09
 ## Requirements (EARS)
 
 ### Module 1 — MCP Transport
-- **REQ-KTO-001 (Ubiquitous)**: 서버는 `KorService2` 15개 오퍼레이션을 `kto_korean_{operationName}` 패턴 도구로 모두 노출해야 한다.
+- **REQ-KTO-001 (Ubiquitous)**: 서버는 `KorService2` 13개 오퍼레이션을 `kto_korean_{operationName}` 패턴 도구로 모두 노출해야 한다 (v1.1.0: `areaCode2`/`categoryCode2`는 data.go.kr Swagger에서 "미사용 기능(삭제예정)"으로 표기되어 제거).
 - **REQ-KTO-002 (Ubiquitous)**: 서버는 stdio · streamable-http · http 세 transport를 `MCP_TRANSPORT_MODE` 로 선택 가능하게 지원해야 한다.
 - **REQ-EVT-001 (Event-driven)**: WHEN MCP 클라이언트가 `tools/call`을 보내면, 서버는 KTO API를 호출하고 정규화된 응답을 반환해야 한다.
 
@@ -40,7 +40,7 @@ Created/Updated: 2026-05-09
 
 ## Acceptance Criteria (요약)
 
-1. stdio transport에서 `tools/list` 응답에 15개 KTO 도구 모두 포함.
+1. stdio transport에서 `tools/list` 응답에 13개 KTO 도구 모두 포함 (v1.1.0).
 2. streamable-http transport에서 동일 도구 노출 (POST `/mcp`).
 3. `kto_korean_areaBasedList2` 정상 호출 시 공통 파라미터 자동 주입 + 응답 정규화.
 4. `KTO_SERVICE_KEY` 누락 시 부트스트랩 즉시 비-0 종료 + 명시적 메시지.

@@ -12,30 +12,30 @@ export class SearchKeywordDto extends KtoPaginationDto {
   @IsString()
   contentTypeId?: string;
 
-  /** 지역 코드 */
+  /** 법정동 지역 코드 */
   @IsOptional()
   @IsString()
-  areaCode?: string;
+  lDongRegnCd?: string;
 
-  /** 시군구 코드 */
+  /** 법정동 시군구 코드 */
   @IsOptional()
   @IsString()
-  sigunguCode?: string;
+  lDongSignguCd?: string;
 
-  /** 대분류 */
+  /** 분류체계 1단계 */
   @IsOptional()
   @IsString()
-  cat1?: string;
+  lclsSystm1?: string;
 
-  /** 중분류 */
+  /** 분류체계 2단계 */
   @IsOptional()
   @IsString()
-  cat2?: string;
+  lclsSystm2?: string;
 
-  /** 소분류 */
+  /** 분류체계 3단계 */
   @IsOptional()
   @IsString()
-  cat3?: string;
+  lclsSystm3?: string;
 
   /** 정렬 기준 */
   @IsOptional()

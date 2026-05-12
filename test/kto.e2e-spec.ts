@@ -56,7 +56,10 @@ import {
 /** e2e 테스트용 공유 SessionCredentialsStore (stateless 모드에서도 타입 요건 충족) */
 const e2eStore = new SessionCredentialsStore();
 // 직접 핸들러 호출 테스트(extra 없음)는 STDIO_SESSION_ID fallback을 사용하므로 더미 자격증명 등록
-e2eStore.register(STDIO_SESSION_ID, { serviceKey: 'e2e-test-key', preencoded: false });
+e2eStore.register(STDIO_SESSION_ID, {
+  serviceKey: 'e2e-test-key',
+  preencoded: false,
+});
 
 /** HTTP POST 요청 헬퍼 */
 function httpPost(
@@ -191,7 +194,7 @@ describe('KTO MCP E2E', () => {
   });
 
   describe('도구 등록 검증', () => {
-    it('McpServer에 65개 KTO 도구(kto_korean_* 15개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개 + kto_durunubi_* 2개 + kto_pet_* 4개 + kto_medical_* 7개 + kto_wellness_* 8개 + kto_contest_* 2개)가 모두 등록된다 (acceptance criterion 1)', () => {
+    it('McpServer에 63개 KTO 도구(kto_korean_* 13개 + kto_barrier_free_* 10개 + kto_photo_* 4개 + kto_camping_* 5개 + kto_audio_* 8개 + kto_durunubi_* 2개 + kto_pet_* 4개 + kto_medical_* 7개 + kto_wellness_* 8개 + kto_contest_* 2개)가 모두 등록된다 (acceptance criterion 1)', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test',
         version: '0.1.0',
@@ -216,7 +219,7 @@ describe('KTO MCP E2E', () => {
       const server = mcpServer as unknown as {
         _registeredTools: Record<string, unknown>;
       };
-      expect(Object.keys(server._registeredTools).length).toBe(65);
+      expect(Object.keys(server._registeredTools).length).toBe(63);
     });
 
     it('kto_durunubi_* 도구가 정확히 2개여야 한다 (SPEC-KTO-006 Scenario 2)', () => {
@@ -283,7 +286,7 @@ describe('KTO MCP E2E', () => {
       expect(mockDurunubiService.courseList).not.toHaveBeenCalled();
     });
 
-    it('kto_korean_* 15 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 + kto_durunubi_* 2 + kto_pet_* 4 + kto_medical_* 7 + kto_wellness_* 8 + kto_contest_* 2 도구가 모두 포함된다', () => {
+    it('kto_korean_* 13 + kto_barrier_free_* 10 + kto_photo_* 4 + kto_camping_* 5 + kto_audio_* 8 + kto_durunubi_* 2 + kto_pet_* 4 + kto_medical_* 7 + kto_wellness_* 8 + kto_contest_* 2 도구가 모두 포함된다', () => {
       const mcpServer = new McpServer({
         name: 'kto-mcp-test-2',
         version: '0.1.0',

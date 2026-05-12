@@ -64,7 +64,7 @@ describe('registerAll()', () => {
     store.register(STDIO_SESSION_ID, testCredentials);
   });
 
-  it('15개 KTO 도구와 10개 무장애 도구를 합쳐 25개를 McpServer에 등록한다', () => {
+  it('13개 KTO 도구와 10개 무장애 도구를 합쳐 23개를 McpServer에 등록한다', () => {
     registerAll(
       mcpServer,
       [
@@ -75,11 +75,11 @@ describe('registerAll()', () => {
     );
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(mcpServer.registerTool).toHaveBeenCalledTimes(25);
+    expect(mcpServer.registerTool).toHaveBeenCalledTimes(23);
     const names = (mcpServer.registerTool as jest.Mock).mock.calls.map(
       (call: unknown[]) => call[0],
     );
-    // 한국 관광정보 도구 15개 포함 확인
+    // 한국 관광정보 도구 13개 포함 확인
     for (const tool of KOREAN_TOUR_INFO_TOOLS) {
       expect(names).toContain(tool.name);
     }
@@ -89,7 +89,7 @@ describe('registerAll()', () => {
     }
   });
 
-  it('단일 레지스트리 사용 시 15개 도구를 등록한다 (하위 호환 패턴)', () => {
+  it('단일 레지스트리 사용 시 13개 도구를 등록한다 (하위 호환 패턴)', () => {
     registerAll(
       mcpServer,
       [{ tools: KOREAN_TOUR_INFO_TOOLS, service: koreanService }],
@@ -97,7 +97,7 @@ describe('registerAll()', () => {
     );
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(mcpServer.registerTool).toHaveBeenCalledTimes(15);
+    expect(mcpServer.registerTool).toHaveBeenCalledTimes(13);
     const names = (mcpServer.registerTool as jest.Mock).mock.calls.map(
       (call: unknown[]) => call[0],
     );

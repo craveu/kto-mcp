@@ -2,8 +2,6 @@ import type { McpToolDefinition } from '../../mcp/types/mcp.types';
 import {
   AreaBasedListDto,
   AreaBasedSyncListDto,
-  AreaCodeDto,
-  CategoryCodeDto,
   DetailCommonDto,
   DetailImageDto,
   DetailInfoDto,
@@ -25,16 +23,16 @@ export const KOREAN_TOUR_INFO_TOOLS: McpToolDefinition[] = [
   {
     name: 'kto_korean_areaBasedList2',
     description:
-      '지역기반 관광정보 목록을 조회합니다. 지역 코드, 콘텐츠 유형, 카테고리별 필터링이 가능합니다.',
+      '지역기반 관광정보 목록을 조회합니다. 법정동 지역 코드, 콘텐츠 유형, 분류체계별 필터링이 가능합니다.',
     inputSchema: {
       type: 'object',
       properties: {
-        areaCode: { type: 'string', description: '지역 코드' },
-        sigunguCode: { type: 'string', description: '시군구 코드' },
+        lDongRegnCd: { type: 'string', description: '법정동 지역 코드' },
+        lDongSignguCd: { type: 'string', description: '법정동 시군구 코드' },
         contentTypeId: { type: 'string', description: '콘텐츠 타입 ID' },
-        cat1: { type: 'string', description: '대분류' },
-        cat2: { type: 'string', description: '중분류' },
-        cat3: { type: 'string', description: '소분류' },
+        lclsSystm1: { type: 'string', description: '분류체계 1단계' },
+        lclsSystm2: { type: 'string', description: '분류체계 2단계' },
+        lclsSystm3: { type: 'string', description: '분류체계 3단계' },
         arrange: {
           type: 'string',
           description:
@@ -59,12 +57,12 @@ export const KOREAN_TOUR_INFO_TOOLS: McpToolDefinition[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        areaCode: { type: 'string', description: '지역 코드' },
-        sigunguCode: { type: 'string', description: '시군구 코드' },
+        lDongRegnCd: { type: 'string', description: '법정동 지역 코드' },
+        lDongSignguCd: { type: 'string', description: '법정동 시군구 코드' },
         contentTypeId: { type: 'string', description: '콘텐츠 타입 ID' },
-        cat1: { type: 'string', description: '대분류' },
-        cat2: { type: 'string', description: '중분류' },
-        cat3: { type: 'string', description: '소분류' },
+        lclsSystm1: { type: 'string', description: '분류체계 1단계' },
+        lclsSystm2: { type: 'string', description: '분류체계 2단계' },
+        lclsSystm3: { type: 'string', description: '분류체계 3단계' },
         showflag: {
           type: 'string',
           description: '공개 여부 (1: 공개, 0: 비공개)',
@@ -89,45 +87,6 @@ export const KOREAN_TOUR_INFO_TOOLS: McpToolDefinition[] = [
     },
     dtoClass: AreaBasedSyncListDto,
     methodName: 'areaBasedSyncList2',
-  },
-  {
-    name: 'kto_korean_areaCode2',
-    description:
-      '지역 코드를 조회합니다. 미지정 시 17개 시도 목록을 반환합니다.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        areaCode: { type: 'string', description: '지역 코드 (시도 단위)' },
-        numOfRows: {
-          type: 'number',
-          description: '한 페이지 결과 수',
-          minimum: 1,
-        },
-        pageNo: { type: 'number', description: '페이지 번호', minimum: 1 },
-      },
-    },
-    dtoClass: AreaCodeDto,
-    methodName: 'areaCode2',
-  },
-  {
-    name: 'kto_korean_categoryCode2',
-    description: '서비스 분류 코드를 조회합니다.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        contentTypeId: { type: 'string', description: '콘텐츠 타입 ID' },
-        cat1: { type: 'string', description: '대분류' },
-        cat2: { type: 'string', description: '중분류' },
-        numOfRows: {
-          type: 'number',
-          description: '한 페이지 결과 수',
-          minimum: 1,
-        },
-        pageNo: { type: 'number', description: '페이지 번호', minimum: 1 },
-      },
-    },
-    dtoClass: CategoryCodeDto,
-    methodName: 'categoryCode2',
   },
   {
     name: 'kto_korean_detailCommon2',
@@ -298,8 +257,8 @@ export const KOREAN_TOUR_INFO_TOOLS: McpToolDefinition[] = [
           description: '행사 시작일 (YYYYMMDD, 필수)',
         },
         eventEndDate: { type: 'string', description: '행사 종료일 (YYYYMMDD)' },
-        areaCode: { type: 'string', description: '지역 코드' },
-        sigunguCode: { type: 'string', description: '시군구 코드' },
+        lDongRegnCd: { type: 'string', description: '법정동 지역 코드' },
+        lDongSignguCd: { type: 'string', description: '법정동 시군구 코드' },
         arrange: {
           type: 'string',
           description: '정렬 기준',
@@ -325,11 +284,11 @@ export const KOREAN_TOUR_INFO_TOOLS: McpToolDefinition[] = [
       properties: {
         keyword: { type: 'string', description: '검색 키워드 (필수)' },
         contentTypeId: { type: 'string', description: '콘텐츠 타입 ID' },
-        areaCode: { type: 'string', description: '지역 코드' },
-        sigunguCode: { type: 'string', description: '시군구 코드' },
-        cat1: { type: 'string', description: '대분류' },
-        cat2: { type: 'string', description: '중분류' },
-        cat3: { type: 'string', description: '소분류' },
+        lDongRegnCd: { type: 'string', description: '법정동 지역 코드' },
+        lDongSignguCd: { type: 'string', description: '법정동 시군구 코드' },
+        lclsSystm1: { type: 'string', description: '분류체계 1단계' },
+        lclsSystm2: { type: 'string', description: '분류체계 2단계' },
+        lclsSystm3: { type: 'string', description: '분류체계 3단계' },
         arrange: {
           type: 'string',
           description: '정렬 기준',
@@ -354,8 +313,8 @@ export const KOREAN_TOUR_INFO_TOOLS: McpToolDefinition[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        areaCode: { type: 'string', description: '지역 코드' },
-        sigunguCode: { type: 'string', description: '시군구 코드' },
+        lDongRegnCd: { type: 'string', description: '법정동 지역 코드' },
+        lDongSignguCd: { type: 'string', description: '법정동 시군구 코드' },
         arrange: {
           type: 'string',
           description: '정렬 기준',

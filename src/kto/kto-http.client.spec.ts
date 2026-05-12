@@ -60,7 +60,7 @@ describe('KtoHttpClient', () => {
       let capturedQuery: Record<string, string> = {};
 
       nock('http://apis.data.go.kr')
-        .get('/B551011/KorService2/areaCode2')
+        .get('/B551011/KorService2/ldongCode2')
         .query((query) => {
           capturedQuery = query as Record<string, string>;
           return true;
@@ -79,7 +79,7 @@ describe('KtoHttpClient', () => {
 
       await client.request({
         service: 'KorService2',
-        operation: 'areaCode2',
+        operation: 'ldongCode2',
         credentials: TEST_CREDENTIALS,
       });
 
@@ -128,7 +128,7 @@ describe('KtoHttpClient', () => {
       let capturedKey2 = '';
 
       nock('http://apis.data.go.kr')
-        .get('/B551011/KorService2/areaCode2')
+        .get('/B551011/KorService2/ldongCode2')
         .query((q) => {
           capturedKey1 = (q as Record<string, string>)['serviceKey'];
           return true;
@@ -141,7 +141,7 @@ describe('KtoHttpClient', () => {
         });
 
       nock('http://apis.data.go.kr')
-        .get('/B551011/KorService2/areaCode2')
+        .get('/B551011/KorService2/ldongCode2')
         .query((q) => {
           capturedKey2 = (q as Record<string, string>)['serviceKey'];
           return true;
@@ -155,12 +155,12 @@ describe('KtoHttpClient', () => {
 
       await client.request({
         service: 'KorService2',
-        operation: 'areaCode2',
+        operation: 'ldongCode2',
         credentials: creds1,
       });
       await client.request({
         service: 'KorService2',
-        operation: 'areaCode2',
+        operation: 'ldongCode2',
         credentials: creds2,
       });
 

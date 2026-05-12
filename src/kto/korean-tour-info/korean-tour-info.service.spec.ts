@@ -34,7 +34,7 @@ describe('KoreanTourInfoService', () => {
       mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
 
       const result = await service.areaBasedList2(
-        { areaCode: '1' },
+        { lDongRegnCd: '11' },
         testCredentials,
       );
 
@@ -132,27 +132,12 @@ describe('KoreanTourInfoService', () => {
     });
   });
 
-  describe('areaCode2', () => {
-    it('지역 코드 목록을 반환해야 한다', async () => {
-      const mockItems = [{ code: '1', name: '서울' }];
-      mockRequest.mockResolvedValueOnce(mockListResponse(mockItems));
-
-      const result = await service.areaCode2({}, testCredentials);
-
-      expect(result.items).toHaveLength(1);
-      expect(mockRequest).toHaveBeenCalledWith(
-        expect.objectContaining({ operation: 'areaCode2' }),
-      );
-    });
-  });
-
   describe('나머지 오퍼레이션', () => {
     const operations: [string, () => Promise<unknown>][] = [
       [
         'areaBasedSyncList2',
         () => service.areaBasedSyncList2({}, testCredentials),
       ],
-      ['categoryCode2', () => service.categoryCode2({}, testCredentials)],
       [
         'detailImage2',
         () => service.detailImage2({ contentId: '1' }, testCredentials),

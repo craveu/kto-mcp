@@ -1,6 +1,6 @@
 ---
 id: SPEC-KTO-001
-version: 1.0.0
+version: 1.1.0
 status: completed
 created: 2026-05-09
 updated: 2026-05-09
@@ -15,6 +15,7 @@ issue_number: 0
 
 | Version | Date | Author | Change |
 |---------|------|--------|--------|
+| 1.1.0 | 2026-05-12 | Seonho Kim | deprecated 오퍼레이션 areaCode2 + categoryCode2 삭제 및 레거시 파라미터 제거. 도구 수 15 → 13 |
 | 1.0.0 | 2026-05-09 | Seonho Kim | 구현 완료. 모든 요구사항 만족, 테스트 통과 (76 unit + 6 e2e), 95.41% 커버리지, lint 0 errors |
 | 0.1.0 | 2026-05-09 | Seonho Kim | 초안 생성. KorService2 15개 오퍼레이션을 MCP 도구로 1:1 매핑하는 1차 이터레이션 정의 |
 
@@ -263,5 +264,25 @@ The application bootstrap (`src/main.ts`) **shall** load environment variables, 
 
 ---
 
-Version: 1.0.0
-Last Updated: 2026-05-09
+### Patch: 2026-05-12 — Deprecated Operations & Legacy Parameter Removal (v1.1.0)
+
+**Reference**: https://www.data.go.kr/data/15101578/openapi.do (KorService2 Swagger)
+
+**Deprecated operations removed** (Swagger `description` field: `미사용 기능 (삭제예정-...)`):
+- `/areaCode2` — `미사용 기능 (삭제예정-법정동 시도코드 대체)` → 도구 `kto_korean_areaCode2` 삭제
+- `/categoryCode2` — `미사용 기능 (삭제예정-분류체계 코드로 대체)` → 도구 `kto_korean_categoryCode2` 삭제
+
+**Legacy parameters removed** from 5 operations (실측 결과 부분 데이터 반환):
+- `areaCode`, `sigunguCode` — `areaBasedList2`, `areaBasedSyncList2`, `searchKeyword2`, `searchFestival2`, `searchStay2`에서 제거
+- `cat1`, `cat2`, `cat3` — `areaBasedList2`, `areaBasedSyncList2`, `searchKeyword2`에서 제거
+
+**New parameters added** (법정동 / 분류체계 기반):
+- `lDongRegnCd`, `lDongSignguCd` — 위 5개 오퍼레이션에 추가
+- `lclsSystm1`, `lclsSystm2`, `lclsSystm3` — `areaBasedList2`, `areaBasedSyncList2`, `searchKeyword2`에 추가
+
+**Tool count**: 15 → 13
+
+---
+
+Version: 1.1.0
+Last Updated: 2026-05-12

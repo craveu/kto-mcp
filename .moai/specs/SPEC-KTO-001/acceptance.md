@@ -13,12 +13,10 @@ Jest 테스트(단위 또는 e2e)로 구현되어야 하며, 통과 여부가 SP
 
 **Given** `MCP_TRANSPORT_MODE=stdio`, `KTO_SERVICE_KEY=<유효 키>` 환경에서 서버를 부팅하고,
 **When** MCP 클라이언트(또는 in-process 테스트 클라이언트)가 `tools/list` JSON-RPC 요청을 전송하면,
-**Then** 응답의 `tools` 배열에는 다음 15개 이름이 모두 포함되어야 한다:
+**Then** 응답의 `tools` 배열에는 다음 13개 이름이 모두 포함되어야 한다 (v1.1.0에서 `kto_korean_areaCode2`, `kto_korean_categoryCode2` 제거):
 
 - `kto_korean_areaBasedList2`
 - `kto_korean_areaBasedSyncList2`
-- `kto_korean_areaCode2`
-- `kto_korean_categoryCode2`
 - `kto_korean_detailCommon2`
 - `kto_korean_detailImage2`
 - `kto_korean_detailInfo2`
@@ -39,7 +37,7 @@ Jest 테스트(단위 또는 e2e)로 구현되어야 하며, 통과 여부가 SP
 
 **Given** `MCP_TRANSPORT_MODE=streamable-http`, `MCP_HTTP_PORT=3000`, `KTO_SERVICE_KEY=<유효 키>` 환경에서 서버를 부팅하고,
 **When** supertest 또는 fetch 클라이언트가 `POST http://localhost:3000/mcp` 로 `tools/list` JSON-RPC 본문을 전송하면,
-**Then** HTTP 200 응답이 반환되고 본문에 Scenario 1과 동일한 15개 도구가 포함된다.
+**Then** HTTP 200 응답이 반환되고 본문에 Scenario 1과 동일한 13개 도구가 포함된다.
 
 ---
 

@@ -94,8 +94,8 @@ KTO는 동일한 오퍼레이션 셋을 8개 다국어로 별도 서비스로 �
 
 | 오퍼레이션 | 한글명 | 핵심 파라미터(공통 외) | 주요 응답 필드 |
 |------------|--------|------------------------|----------------|
-| `areaCode2` | 지역 코드 조회 | `areaCode?` (시도 단위 미지정 시 17개 시도 반환) | `code`, `name`, `rnum` |
-| `categoryCode2` | 서비스 분류 코드 조회 | `cat1?`, `cat2?`, `cat3?`, `contentTypeId?` | `code`, `name`, `rnum` |
+| ~~`areaCode2`~~ (v1.1.0 제거) | 지역 코드 조회 | `areaCode?` | data.go.kr Swagger `미사용 기능(삭제예정-법정동 시도코드 대체)` → `ldongCode2` 사용 |
+| ~~`categoryCode2`~~ (v1.1.0 제거) | 서비스 분류 코드 조회 | `cat1?`, `cat2?`, `cat3?`, `contentTypeId?` | data.go.kr Swagger `미사용 기능(삭제예정-분류체계 코드로 대체)` → `lclsSystmCode2` 사용 |
 | `ldongCode2` | 법정동 코드 조회 | `lDongRegnCd?`, `lDongSignguCd?` | `code`, `name`, `rnum` |
 | `lclsSystmCode2` | 분류체계 코드 조회 | `lclsSystm1?`, `lclsSystm2?`, `lclsSystm3?` | `code`, `name`, `rnum` |
 

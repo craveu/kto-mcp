@@ -1,0 +1,6 @@
+{
+  "name": "kto-mcp",
+  "framework": "nestjs",
+  "registry": "oci.wntd.co/backyard/kto-mcp",
+  "createdAt": "2026-05-12T00:00:00Z"
+}

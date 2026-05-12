@@ -16,15 +16,15 @@ export class SearchFestivalDto extends KtoPaginationDto {
   @Matches(/^\d{8}$/, { message: 'eventEndDate는 YYYYMMDD 형식이어야 합니다' })
   eventEndDate?: string;
 
-  /** 지역 코드 */
+  /** 법정동 지역 코드 */
   @IsOptional()
   @IsString()
-  areaCode?: string;
+  lDongRegnCd?: string;
 
-  /** 시군구 코드 */
+  /** 법정동 시군구 코드 */
   @IsOptional()
   @IsString()
-  sigunguCode?: string;
+  lDongSignguCd?: string;
 
   /** 정렬 기준 */
   @IsOptional()
