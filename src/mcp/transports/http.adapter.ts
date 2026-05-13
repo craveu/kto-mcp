@@ -105,6 +105,16 @@ export class HttpTransportAdapter {
         this.transports.set(sid, transport);
         if (pendingCreds) {
           this.store.register(sid, pendingCreds);
+          const keyTail = pendingCreds.serviceKey.slice(-4);
+          console.error(
+            `[kto-mcp] session ${sid} auth=present (key …${keyTail})`,
+          );
+        } else {
+          const authHeader = req.headers['authorization'];
+          const hasHeader = typeof authHeader === 'string' && authHeader !== '';
+          console.error(
+            `[kto-mcp] session ${sid} auth=MISSING — authorization header ${hasHeader ? 'malformed (not Bearer scheme)' : 'absent'}. Subsequent tools/call will fail with KtoServiceKeyMissingError.`,
+          );
         }
       },
       onsessionclosed: (sid: string) => {
