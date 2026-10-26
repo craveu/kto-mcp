@@ -1,4 +1,4 @@
-FROM node:24-alpine AS builder
+FROM node:24.22.1-alpine3.23 AS builder
 WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -7,7 +7,7 @@ COPY tsconfig*.json nest-cli.json ./
 COPY src ./src
 RUN pnpm run build && pnpm prune --prod
 
-FROM node:24-alpine
+FROM node:24.22.1-alpine3.23
 WORKDIR /app
 ENV NODE_ENV=production
 ENV MCP_TRANSPORT_MODE=http-streamable
